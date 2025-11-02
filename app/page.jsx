@@ -580,7 +580,7 @@ export default function ComingSoonPage() {
             </motion.p>
 
             <motion.a
-              href="https://drive.google.com/file/d/13QBLrBvGlRmT6sHP0Eqa8PqfrYSVtAc2/view?usp=sharing"
+              href="https://drive.google.com/file/d/1b7huS79snsoPN25ug07OTrvNPlXRXW6o/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
