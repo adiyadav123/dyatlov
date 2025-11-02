@@ -1,15 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Cormorant+SC:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Inconsolata:wght@400;700&display=swap');
+
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-cormorant-sc: 'Cormorant SC', serif;
+  --font-cormorant-garamond: 'Cormorant Garamond', serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Inter', var(--font-geist-sans);
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-mono: 'Inconsolata', monospace;
+}
+
+.font-cormorant-sc {
+  font-family: var(--font-cormorant-sc);
+}
+
+.font-cormorant-garamond {
+  font-family: var(--font-cormorant-garamond);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +35,165 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.font-serif {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.font-mono {
+  font-family: 'Inconsolata', monospace;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0c0a09;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #44403c;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #57534e;
+}
+
+::selection {
+  background: rgba(217, 119, 6, 0.3);
+  color: #fef3c7;
+  transition: all 0.3s ease;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(217, 119, 6, 0.6);
+  outline-offset: 2px;
+  transition: outline 0.3s ease;
+}
+
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+button, a, [role="button"] {
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* Liquid Glass Cursor */
+html {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><radialGradient id="liquidGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:rgba(217,119,6,0.6);stop-opacity:1" /><stop offset="100%" style="stop-color:rgba(217,119,6,0.1);stop-opacity:1" /></radialGradient></defs><circle cx="16" cy="16" r="10" fill="url(%23liquidGlow)" opacity="0.8" /><circle cx="16" cy="16" r="8" fill="none" stroke="rgba(217,119,6,0.4)" stroke-width="1.5" /><circle cx="16" cy="16" r="4" fill="rgba(217,119,6,0.3)" /></svg>') 16 16, auto;
+}
+
+button, a, [role="button"] {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><radialGradient id="liquidGlowHover" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:rgba(217,119,6,0.8);stop-opacity:1" /><stop offset="100%" style="stop-color:rgba(217,119,6,0.2);stop-opacity:1" /></radialGradient></defs><circle cx="16" cy="16" r="10" fill="url(%23liquidGlowHover)" opacity="0.9" /><circle cx="16" cy="16" r="8" fill="none" stroke="rgba(217,119,6,0.6)" stroke-width="2" /><circle cx="16" cy="16" r="4" fill="rgba(217,119,6,0.5)" /></svg>') 16 16, auto;
+}
+
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(217, 119, 6, 0.8), 0 0 60px rgba(217, 119, 6, 0.5);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes liquidWave {
+  0% {
+    filter: blur(0px) drop-shadow(0 0 0px rgba(217, 119, 6, 0));
+    transform: scale(1) skewY(0deg);
+  }
+  25% {
+    filter: blur(0.5px) drop-shadow(0 0 8px rgba(217, 119, 6, 0.4));
+    transform: scale(1.02) skewY(1deg);
+  }
+  50% {
+    filter: blur(1px) drop-shadow(0 0 12px rgba(217, 119, 6, 0.6));
+    transform: scale(1.04) skewY(0deg);
+  }
+  75% {
+    filter: blur(0.5px) drop-shadow(0 0 8px rgba(217, 119, 6, 0.4));
+    transform: scale(1.02) skewY(-1deg);
+  }
+  100% {
+    filter: blur(0px) drop-shadow(0 0 0px rgba(217, 119, 6, 0));
+    transform: scale(1) skewY(0deg);
+  }
+}
+
+@keyframes liquidBubble {
+  0% {
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 100%, 0% 100%,
+      20% 50%, 30% 20%, 50% 10%, 70% 20%, 80% 50%, 70% 80%, 50% 90%, 30% 80%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 100%, 0% 100%,
+      25% 45%, 35% 15%, 50% 5%, 65% 15%, 75% 45%, 65% 85%, 50% 95%, 35% 85%
+    );
+  }
+  100% {
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 100%, 0% 100%,
+      20% 50%, 30% 20%, 50% 10%, 70% 20%, 80% 50%, 70% 80%, 50% 90%, 30% 80%
+    );
+  }
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background-size: 1000px 100%;
+  animation: shimmer 3s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-liquid-wave {
+  animation: liquidWave 4s ease-in-out infinite;
+}
+
+.animate-liquid-bubble {
+  animation: liquidBubble 3s ease-in-out infinite;
 }
