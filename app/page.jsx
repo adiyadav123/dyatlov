@@ -551,6 +551,75 @@ export default function ComingSoonPage() {
           </motion.div>
         </section>
 
+        <section className="py-20 px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
+            className="max-w-3xl mx-auto text-center"
+          >
+            <motion.h2
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={getTransition({ duration: 0.8, delay: 0.1 })}
+              className="text-4xl md:text-5xl text-white mb-6 font-cormorant-sc font-600"
+            >
+              Event Details
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={getTransition({ duration: 0.8, delay: 0.2 })}
+              className="text-stone-400 text-lg md:text-xl leading-relaxed font-light font-cormorant-garamond mb-10"
+            >
+              Want to know more about The Dyatlov Chronicles? Download our comprehensive event brochure to learn about the rules, timeline, prizes, and everything you need to know to participate.
+            </motion.p>
+
+            <motion.a
+              href="https://drive.google.com/file/d/1RXCsbW_LItCwhbO4gr8eEYZfgVFTFM-m/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={getTransition({ duration: 0.8, delay: 0.3 })}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-cormorant-garamond font-700 tracking-wider rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-amber-600/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+            >
+              <motion.span
+                animate={{ rotate: [0, 360] }}
+                transition={getTransition({ duration: 3, repeat: Infinity })}
+                className="text-xl"
+              >
+                📄
+              </motion.span>
+              <span>DOWNLOAD EVENT BROCHURE</span>
+              <motion.span
+                animate={{ x: [0, 3, 0] }}
+                transition={getTransition({ duration: 1.5, repeat: Infinity })}
+                className="text-lg"
+              >
+                →
+              </motion.span>
+            </motion.a>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={getTransition({ duration: 0.8, delay: 0.4 })}
+              className="text-stone-500 text-sm mt-6 font-cormorant-garamond"
+            >
+              PDF Format • Opens in Google Drive
+            </motion.p>
+          </motion.div>
+        </section>
+
         <footer className="py-12 px-6 text-center border-t border-stone-900">
           <motion.div
             initial={{ opacity: 0 }}
