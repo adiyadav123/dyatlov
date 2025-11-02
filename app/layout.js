@@ -24,6 +24,9 @@ const cormorantGaramond = Cormorant_Garamond({
 export const metadata = {
   title: "The Hunt - Coming Soon",
   description: "An interactive treasure hunt experience. Coming November 5, 2025.",
+  keywords: ["coming soon", "interactive", "treasure hunt", "experience"],
+  authors: [{ name: "The Jaipuria Computer Club & Team" }],
+  creator: "The Jaipuria Computer Club",
 }
 
 export default function RootLayout({ children }) {
