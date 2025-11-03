@@ -18,11 +18,12 @@ export default function ComingSoonPage() {
   const [mounted, setMounted] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [scrollBlur, setScrollBlur] = useState({ top: 0, bottom: 0 });
   const containerRef = useRef(null);
   const restrictedAccessRef = useRef(null);
   const comingSoonRef = useRef(null);
 
-  const launchDate = new Date("2025-11-05T00:00:00");
+  const launchDate = new Date("2025-11-07T00:00:00");
 
   const { scrollYProgress } = useScroll();
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
@@ -33,7 +34,6 @@ export default function ComingSoonPage() {
   useEffect(() => {
     setMounted(true);
 
-    // Check for reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
 
@@ -43,11 +43,9 @@ export default function ComingSoonPage() {
 
     mediaQuery.addEventListener("change", handleReducedMotionChange);
 
-    // Mouse tracking for liquid effect
     const handleMouseMove = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
 
-      // Apply liquid effect to badges
       [restrictedAccessRef, comingSoonRef].forEach((ref) => {
         if (ref.current) {
           const rect = ref.current.getBoundingClientRect();
@@ -57,7 +55,6 @@ export default function ComingSoonPage() {
           const distY = e.clientY - centerY;
           const distance = Math.sqrt(distX * distX + distY * distY);
 
-          // Apply liquid effect when cursor is near (within 200px)
           if (distance < 200) {
             const strength = (200 - distance) / 200;
             const rotateX = (distY / distance) * strength * 5;
@@ -75,6 +72,30 @@ export default function ComingSoonPage() {
     };
 
     window.addEventListener("mousemove", handleMouseMove);
+
+    // Scroll blur effect
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = scrollTop / docHeight;
+
+      // Calculate blur amount based on scroll position
+      const topBlur = Math.min(scrollTop / 100, 10);
+      const bottomBlur = Math.min((docHeight - scrollTop) / 100, 10);
+
+      setScrollBlur({ top: topBlur, bottom: bottomBlur });
+
+      // Apply filter to body for color dullness effect
+      const topDullness = Math.min(scrollTop / 500, 0.4);
+      const bottomDullness = Math.min((docHeight - scrollTop) / 500, 0.4);
+      const maxDullness = Math.max(topDullness, bottomDullness);
+
+      if (containerRef.current) {
+        containerRef.current.style.filter = `saturate(${1 - maxDullness * 0.5})`;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
 
     const timer = setInterval(() => {
       const now = new Date();
@@ -94,12 +115,12 @@ export default function ComingSoonPage() {
       clearInterval(timer);
       mediaQuery.removeEventListener("change", handleReducedMotionChange);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   if (!mounted) return null;
 
-  // Adjust transitions based on reduced motion preference
   const getTransition = (transition) => {
     if (prefersReducedMotion) {
       return {
@@ -517,19 +538,20 @@ export default function ComingSoonPage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className="text-white text-3xl font-bold mb-3"
+                  className="text-white text-[18px] font-bold mb-3 font-cormorant-garamond"
                 >
-                  Aditya Yadav (XI A)
+                  Aditya Yadav
                 </motion.p>
                 <motion.p
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
-                  className="text-amber-400 text-lg mb-6"
+                  className="text-amber-400 text-[18px] mb-4 font-cormorant-garamond"
                 >
                   President, JCC
                 </motion.p>
+
                 <motion.div
                   initial={{ scaleX: 0 }}
                   whileInView={{ scaleX: 1 }}
@@ -537,15 +559,34 @@ export default function ComingSoonPage() {
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="h-px bg-gradient-to-r from-transparent via-stone-700 to-transparent my-6 origin-left"
                 />
-                <motion.p
+
+                <motion.div
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.5 }}
+                  transition={getTransition({ duration: 0.8, delay: 0.5 })}
                   className="text-stone-400 text-base font-cormorant-garamond"
                 >
-                  & The JCC Team
-                </motion.p>
+                  <p className="mb-3 font-semibold text-stone-300">Organizing Team</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {[
+                      "Aaditri",
+                      "Aditi Seth",
+                      "Shubhankar",
+                      "Swastik Gupta",
+                      "Sridha Raman",
+                      "Siddhant",
+                      "Akshita",
+                    ].map((name, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 bg-stone-900/20 rounded-full text-[18px] text-stone-200"
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -580,7 +621,7 @@ export default function ComingSoonPage() {
             </motion.p>
 
             <motion.a
-              href="https://drive.google.com/file/d/1b7huS79snsoPN25ug07OTrvNPlXRXW6o/view?usp=sharing"
+              href="https://drive.google.com/file/d/1UsApAKgTaNlVePNxBcTc5U-iWPufigyZ/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
