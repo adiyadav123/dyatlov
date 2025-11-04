@@ -585,7 +585,7 @@ export default function ComingSoonPage() {
                   <div>
                     <p className="text-amber-400 font-semibold text-lg mb-2">Clues & Puzzles</p>
                     <div className="flex flex-wrap justify-center gap-3">
-                      {["Kunwar Siddhant", "Akshita Jha", "Sridha Raman"].map((name, i) => (
+                      {["Kunwar Siddhant", "Sridha Raman"].map((name, i) => (
                         <span
                           key={i}
                           className="px-3 py-1 bg-stone-900/30 border border-stone-800/50 rounded-full text-stone-200"
