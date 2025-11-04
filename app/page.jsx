@@ -10,7 +10,6 @@ const DEFAULT_TRANSITIONS = {
 
 export default function ComingSoonPage() {
   const [timeRemaining, setTimeRemaining] = useState({
-    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
@@ -103,8 +102,7 @@ export default function ComingSoonPage() {
 
       if (difference > 0) {
         setTimeRemaining({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24) + Math.floor(difference / (1000 * 60 * 60 * 24)) * 24,
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
@@ -367,9 +365,8 @@ export default function ComingSoonPage() {
             transition={{ duration: 0.8, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
             className="w-full max-w-5xl mb-20"
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            <div className="flex items-center justify-center gap-6 md:gap-8 countdown">
               {[
-                { label: "DAYS", value: timeRemaining.days },
                 { label: "HOURS", value: timeRemaining.hours },
                 { label: "MINUTES", value: timeRemaining.minutes },
                 { label: "SECONDS", value: timeRemaining.seconds },
