@@ -538,25 +538,16 @@ export default function ComingSoonPage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className="text-white text-[18px] font-bold mb-3 font-cormorant-garamond"
+                  className="text-white text-[20px] font-bold mb-6 font-cormorant-garamond"
                 >
-                  Aditya Yadav
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                  className="text-amber-400 text-[18px] mb-4 font-cormorant-garamond"
-                >
-                  President, JCC
+                  JCC Varanasi
                 </motion.p>
 
                 <motion.div
                   initial={{ scaleX: 0 }}
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
                   className="h-px bg-gradient-to-r from-transparent via-stone-700 to-transparent my-6 origin-left"
                 />
 
@@ -564,27 +555,45 @@ export default function ComingSoonPage() {
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={getTransition({ duration: 0.8, delay: 0.5 })}
-                  className="text-stone-400 text-base font-cormorant-garamond"
+                  transition={getTransition({ duration: 0.8, delay: 0.4 })}
+                  className="text-stone-400 text-base font-cormorant-garamond space-y-5"
                 >
-                  <p className="mb-3 font-semibold text-stone-300">Organizing Team</p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {[
-                      "Aaditri",
-                      "Aditi Seth",
-                      "Shubhankar",
-                      "Swastik Gupta",
-                      "Sridha Raman",
-                      "Siddhant",
-                      "Akshita",
-                    ].map((name, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 bg-stone-900/20 rounded-full text-[18px] text-stone-200"
-                      >
-                        {name}
-                      </span>
-                    ))}
+                  {/* Event Head */}
+                  <div>
+                    <p className="text-amber-400 font-semibold text-lg mb-2">Event Head</p>
+                    <p className="text-white">Aditya Yadav</p>
+                    <p className="text-stone-500 text-sm">President, JCC • Website & Clues</p>
+                  </div>
+
+            
+                  
+                  <div>
+                    <p className="text-amber-400 font-semibold text-lg mb-2">Graphics & Story</p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {["Shubhankar M. Panth","Aditi Seth", "Aaditri"].map((name, i) => (
+                        <span
+                          key={i}
+                          className="px-3 py-1 bg-stone-900/30 border border-stone-800/50 rounded-full text-stone-200"
+                        >
+                          {name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Clues & Puzzles */}
+                  <div>
+                    <p className="text-amber-400 font-semibold text-lg mb-2">Clues & Puzzles</p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {["Siddhant", "Akshita", "Sridha Raman"].map((name, i) => (
+                        <span
+                          key={i}
+                          className="px-3 py-1 bg-stone-900/30 border border-stone-800/50 rounded-full text-stone-200"
+                        >
+                          {name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </motion.div>
               </motion.div>
