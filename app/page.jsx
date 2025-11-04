@@ -560,17 +560,20 @@ export default function ComingSoonPage() {
                 >
                   {/* Event Head */}
                   <div>
-                    <p className="text-amber-400 font-semibold text-lg mb-2">Event Head</p>
+                    <p className="text-amber-400 font-semibold text-lg mb-2">Event Manager</p>
                     <p className="text-white">Aditya Yadav</p>
                     <p className="text-stone-500 text-sm">President, JCC • Website & Clues</p>
                   </div>
 
-            
+                 <div>
+                  <p className="text-amber-400 font-semibold text-lg mb-2">Creative Head</p>
+                    <p className="text-white">Shubhankar M. Panth</p>
+                 </div>
                   
                   <div>
                     <p className="text-amber-400 font-semibold text-lg mb-2">Graphics & Story</p>
                     <div className="flex flex-wrap justify-center gap-3">
-                      {["Shubhankar M. Panth","Aditi Seth", "Aaditri"].map((name, i) => (
+                      {["Aditi Seth", "Aaditri Singh"].map((name, i) => (
                         <span
                           key={i}
                           className="px-3 py-1 bg-stone-900/30 border border-stone-800/50 rounded-full text-stone-200"
@@ -585,7 +588,7 @@ export default function ComingSoonPage() {
                   <div>
                     <p className="text-amber-400 font-semibold text-lg mb-2">Clues & Puzzles</p>
                     <div className="flex flex-wrap justify-center gap-3">
-                      {["Siddhant", "Akshita", "Sridha Raman"].map((name, i) => (
+                      {["Kunwar Siddhant", "Akshita Jha", "Sridha Raman"].map((name, i) => (
                         <span
                           key={i}
                           className="px-3 py-1 bg-stone-900/30 border border-stone-800/50 rounded-full text-stone-200"
