@@ -61,10 +61,14 @@ export default function ComingSoonPage() {
             const scale = 1 + strength * 0.05;
 
             ref.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
-            ref.current.style.filter = `drop-shadow(0 0 ${strength * 15}px rgba(217, 119, 6, ${strength * 0.5}))`;
+            ref.current.style.filter = `drop-shadow(0 0 ${
+              strength * 15
+            }px rgba(217, 119, 6, ${strength * 0.5}))`;
           } else {
-            ref.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
-            ref.current.style.filter = "drop-shadow(0 0 0px rgba(217, 119, 6, 0))";
+            ref.current.style.transform =
+              "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
+            ref.current.style.filter =
+              "drop-shadow(0 0 0px rgba(217, 119, 6, 0))";
           }
         }
       });
@@ -75,7 +79,8 @@ export default function ComingSoonPage() {
     // Scroll blur effect
     const handleScroll = () => {
       const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
       const scrollPercent = scrollTop / docHeight;
 
       // Calculate blur amount based on scroll position
@@ -90,7 +95,9 @@ export default function ComingSoonPage() {
       const maxDullness = Math.max(topDullness, bottomDullness);
 
       if (containerRef.current) {
-        containerRef.current.style.filter = `saturate(${1 - maxDullness * 0.5})`;
+        containerRef.current.style.filter = `saturate(${
+          1 - maxDullness * 0.5
+        })`;
       }
     };
 
@@ -102,7 +109,9 @@ export default function ComingSoonPage() {
 
       if (difference > 0) {
         setTimeRemaining({
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24) + Math.floor(difference / (1000 * 60 * 60 * 24)) * 24,
+          hours:
+            Math.floor((difference / (1000 * 60 * 60)) % 24) +
+            Math.floor(difference / (1000 * 60 * 60 * 24)) * 24,
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
@@ -339,7 +348,10 @@ export default function ComingSoonPage() {
           >
             <motion.div
               ref={comingSoonRef}
-              whileHover={{ scale: 1.02, boxShadow: "0 0 40px rgba(217, 119, 6, 0.3)" }}
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 0 40px rgba(217, 119, 6, 0.3)",
+              }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
               className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-600/20 backdrop-blur-sm hover:from-amber-600/20 hover:to-orange-600/20 hover:border-amber-600/40 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 cursor-pointer"
               role="heading"
@@ -376,11 +388,17 @@ export default function ComingSoonPage() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={getTransition({ duration: 0.6, delay: 0.3 + index * 0.1 })}
+                  transition={getTransition({
+                    duration: 0.6,
+                    delay: 0.3 + index * 0.1,
+                  })}
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
                   className="relative group"
                   role="timer"
-                  aria-label={`${item.label}: ${String(item.value).padStart(2, "0")}`}
+                  aria-label={`${item.label}: ${String(item.value).padStart(
+                    2,
+                    "0"
+                  )}`}
                 >
                   <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -487,7 +505,11 @@ export default function ComingSoonPage() {
                       initial={{ scale: 0 }}
                       whileInView={{ scale: 1 }}
                       viewport={{ once: true }}
-                      transition={getTransition({ type: "spring", stiffness: 100, delay: index * 0.1 })}
+                      transition={getTransition({
+                        type: "spring",
+                        stiffness: 100,
+                        delay: index * 0.1,
+                      })}
                       className="text-6xl mb-6"
                       aria-label={feature.title}
                     >
@@ -496,7 +518,9 @@ export default function ComingSoonPage() {
                     <h3 className="text-white text-2xl mb-3 tracking-wide font-cormorant-sc font-700">
                       {feature.title}
                     </h3>
-                    <p className="text-stone-500 text-base font-cormorant-garamond">{feature.desc}</p>
+                    <p className="text-stone-500 text-base font-cormorant-garamond">
+                      {feature.desc}
+                    </p>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -557,20 +581,43 @@ export default function ComingSoonPage() {
                 >
                   {/* Event Head */}
                   <div>
-                    <p className="text-amber-400 font-semibold text-lg mb-2">Event Manager</p>
+                    <p className="text-amber-400 font-semibold text-lg mb-2">
+                      Event Manager
+                    </p>
                     <p className="text-white">Aditya Yadav</p>
-                    <p className="text-stone-500 text-sm">President, JCC • Website & Clues</p>
+                    <p className="text-stone-500 text-sm">
+                      President, JCC • Website & Clues
+                    </p>
                   </div>
 
-                 <div>
-                  <p className="text-amber-400 font-semibold text-lg mb-2">Creative Head</p>
-                    <p className="text-white">Shubhankar M. Panth</p>
-                 </div>
-                  
                   <div>
-                    <p className="text-amber-400 font-semibold text-lg mb-2">Graphics & Story</p>
+                    <p className="text-amber-400 font-semibold text-lg mb-2">
+                      Creative Head
+                    </p>
+                    <p className="text-white">Shubhankar M. Panth</p>
+                  </div>
+                  <div className="flex items-center justify-center flex-col">
+                    <p className="text-amber-400 font-semibold text-lg mb-2">
+                      Voices & Dialogues
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-white">Smriti Ma'am</p>
+                      <p className="text-white pl-2"> Tirthankar Sir</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-amber-400 font-semibold text-lg mb-2">
+                      Graphics & Story
+                    </p>
                     <div className="flex flex-wrap justify-center gap-3">
-                      {["Aditi Seth", "Aaditri Singh"].map((name, i) => (
+                      {[
+                        "Aditi Seth",
+                        "Aaditri Singh",
+                        "Swastik Gupta",
+                        "Vanshika Singh",
+                        "Hunar Subedi",
+                      ].map((name, i) => (
                         <span
                           key={i}
                           className="px-3 py-1 bg-stone-900/30 border border-stone-800/50 rounded-full text-stone-200"
@@ -583,7 +630,9 @@ export default function ComingSoonPage() {
 
                   {/* Clues & Puzzles */}
                   <div>
-                    <p className="text-amber-400 font-semibold text-lg mb-2">Clues & Puzzles</p>
+                    <p className="text-amber-400 font-semibold text-lg mb-2">
+                      Clues & Puzzles
+                    </p>
                     <div className="flex flex-wrap justify-center gap-3">
                       {["Kunwar Siddhant", "Sridha Raman"].map((name, i) => (
                         <span
@@ -626,7 +675,9 @@ export default function ComingSoonPage() {
               transition={getTransition({ duration: 0.8, delay: 0.2 })}
               className="text-stone-400 text-lg md:text-xl leading-relaxed font-light font-cormorant-garamond mb-10"
             >
-              Want to know more about The Dyatlov Chronicles? Download our comprehensive event brochure to learn about the rules, timeline, prizes, and everything you need to know to participate.
+              Want to know more about The Dyatlov Chronicles? Download our
+              comprehensive event brochure to learn about the rules, timeline,
+              prizes, and everything you need to know to participate.
             </motion.p>
 
             <motion.a
