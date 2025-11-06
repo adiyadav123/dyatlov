@@ -228,19 +228,19 @@ export default function ComingSoonPage() {
               ref={restrictedAccessRef}
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-amber-600/10 border border-amber-600/20 backdrop-blur-sm hover:bg-amber-600/20 hover:border-amber-600/40 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-green-600/10 border border-green-600/20 backdrop-blur-sm hover:bg-green-600/20 hover:border-green-600/40 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
               role="status"
-              aria-label="Status: Restricted Access"
+              aria-label="Status: Event Live"
               tabIndex={0}
             >
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={getTransition({ duration: 2, repeat: Infinity })}
-                className="w-2 h-2 bg-amber-500 rounded-full"
+                className="w-2 h-2 bg-green-500 rounded-full"
                 aria-hidden="true"
               />
-              <span className="text-amber-200/90 text-base tracking-widest font-cormorant-garamond font-600">
-                RESTRICTED ACCESS
+              <span className="text-green-200/90 text-base tracking-widest font-cormorant-garamond font-600">
+                EVENT IS LIVE
               </span>
             </motion.div>
           </motion.div>
@@ -273,7 +273,7 @@ export default function ComingSoonPage() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-stone-300 text-2xl md:text-3xl leading-relaxed font-light mb-6 font-cormorant-garamond"
             >
-              Some mysteries are meant to be solved.
+              The mystery unfolds now.
             </motion.p>
             <motion.p
               initial={{ opacity: 0 }}
@@ -281,7 +281,7 @@ export default function ComingSoonPage() {
               transition={{ duration: 0.8, delay: 0.8 }}
               className="text-stone-500 text-xl md:text-2xl leading-relaxed font-light font-cormorant-garamond"
             >
-              Are you ready to uncover what lies beneath?
+              Join the investigation and uncover the truth.
             </motion.p>
           </motion.div>
 
@@ -319,15 +319,7 @@ export default function ComingSoonPage() {
             transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-stone-400 text-2xl md:text-3xl leading-relaxed font-light mb-6 font-cormorant-garamond"
-            >
-              Others are meant to consume you.
-            </motion.p>
+            
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -340,34 +332,38 @@ export default function ComingSoonPage() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
             className="mb-16"
           >
-            <motion.div
-              ref={comingSoonRef}
+            <motion.a
+              href="/register"
               whileHover={{
                 scale: 1.02,
-                boxShadow: "0 0 40px rgba(217, 119, 6, 0.3)",
+                boxShadow: "0 0 40px rgba(34, 197, 94, 0.3)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-600/20 backdrop-blur-sm hover:from-amber-600/20 hover:to-orange-600/20 hover:border-amber-600/40 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 cursor-pointer"
-              role="heading"
-              aria-level="2"
+              className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-gradient-to-r from-green-600 to-emerald-600 border border-green-500/20 backdrop-blur-sm hover:from-green-500 hover:to-emerald-500 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500 cursor-pointer text-white font-cormorant-garamond font-700 text-2xl md:text-3xl tracking-wider hover:shadow-lg hover:shadow-green-600/50"
+              role="button"
               tabIndex={0}
             >
               <motion.div
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={getTransition({ duration: 2.5, repeat: Infinity })}
-                className="w-2.5 h-2.5 bg-amber-500 rounded-full"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={getTransition({ duration: 2, repeat: Infinity })}
+                className="w-3 h-3 bg-white rounded-full"
                 aria-hidden="true"
               />
-              <span className="text-amber-200 text-2xl md:text-3xl tracking-wider font-cormorant-garamond font-700">
-                COMING SOON
-              </span>
-            </motion.div>
+              <span>REGISTER NOW</span>
+              <motion.span
+                animate={{ x: [0, 5, 0] }}
+                transition={getTransition({ duration: 1.5, repeat: Infinity })}
+                className="text-2xl"
+              >
+                →
+              </motion.span>
+            </motion.a>
           </motion.div>
 
           <motion.div
@@ -377,65 +373,39 @@ export default function ComingSoonPage() {
             transition={{ duration: 0.8, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
             className="w-full max-w-5xl mb-20"
           >
-            <div className="flex items-center justify-center gap-6 md:gap-8 countdown">
-              {[
-                { label: "HOURS", value: timeRemaining.hours },
-                { label: "MINUTES", value: timeRemaining.minutes },
-                { label: "SECONDS", value: timeRemaining.seconds },
-              ].map((item, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
+            >
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-gradient-to-r from-green-600/10 to-emerald-600/10 border border-green-600/20 backdrop-blur-sm hover:from-green-600/20 hover:to-emerald-600/20 hover:border-green-600/40 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500 cursor-pointer"
+                role="heading"
+                aria-level="2"
+                tabIndex={0}
+              >
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={getTransition({
-                    duration: 0.6,
-                    delay: 0.3 + index * 0.1,
-                  })}
-                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  className="relative group"
-                  role="timer"
-                  aria-label={`${item.label}: ${String(item.value).padStart(
-                    2,
-                    "0"
-                  )}`}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    className="bg-stone-900/50 backdrop-blur-sm border border-stone-800/50 rounded-2xl p-8 md:p-10 hover:border-amber-600/30 hover:bg-stone-900/70 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
-                  >
-                    <motion.div
-                      key={timeRemaining[item.label.toLowerCase()]}
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={getTransition({ duration: 0.3 })}
-                      className="text-6xl md:text-7xl font-bold text-white mb-3 tabular-nums"
-                      aria-hidden="true"
-                    >
-                      {String(item.value).padStart(2, "0")}
-                    </motion.div>
-                    <div className="text-sm md:text-base text-stone-500 tracking-[0.3em] font-cormorant-garamond font-600">
-                      {item.label}
-                    </div>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    transition={getTransition({ duration: 0.3 })}
-                    className="absolute inset-0 bg-gradient-to-r from-amber-600/0 via-amber-600/5 to-amber-600/0 rounded-2xl"
-                    aria-hidden="true"
-                  />
-                </motion.div>
-              ))}
-            </div>
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={getTransition({ duration: 2.5, repeat: Infinity })}
+                  className="w-2.5 h-2.5 bg-green-500 rounded-full"
+                  aria-hidden="true"
+                />
+                <span className="text-green-200 text-2xl md:text-3xl tracking-wider font-cormorant-garamond font-700">
+                  EVENT IS UNDERWAY
+                </span>
+              </motion.div>
+            </motion.div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="text-center max-w-3xl mx-auto"
           >
             <motion.h2
@@ -445,7 +415,7 @@ export default function ComingSoonPage() {
               transition={getTransition({ duration: 0.8, delay: 0.2 })}
               className="text-4xl md:text-5xl text-white mb-8 font-cormorant-sc font-600"
             >
-              What Awaits You
+              How to Participate
             </motion.h2>
             <motion.p
               initial={{ opacity: 0 }}
@@ -454,9 +424,7 @@ export default function ComingSoonPage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-stone-400 text-lg md:text-xl leading-relaxed font-light font-cormorant-garamond"
             >
-              Navigate through encrypted messages, decode cryptic puzzles, and
-              follow trails that lead deeper into the unknown. Every clue
-              matters. Every decision counts.
+              Register as an individual investigator or assemble a team to dive into the mystery. Navigate through encrypted messages, decode cryptic puzzles, and follow trails that lead deeper into the unknown. Every clue matters. Every decision counts.
             </motion.p>
           </motion.div>
         </motion.section>

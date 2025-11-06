@@ -357,8 +357,15 @@ button, a, [role="button"] {
 }
 
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 840px) {
   .countdown{
     flex-direction: column;
   }
+  .ticket_button{ 
+    margin-top: 10vh;
+  }
+  .ticket_cross { 
+    margin-top: 10vh;
+  }
 }
+
