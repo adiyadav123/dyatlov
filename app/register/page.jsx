@@ -71,8 +71,15 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const classes = ['9', '10', '11', '12']
-  const sections = ['A', 'B', 'C', 'D', 'E']
+  const classes = ['8','9', '10', '11', '12']
+  
+  // Dynamic sections based on class
+  const getSectionsForClass = (classValue) => {
+    if (classValue === '8' || classValue === '9') return ['A', 'B', 'C', 'D']
+    if (classValue === '10' || classValue === '11') return ['A', 'B', 'C']
+    if (classValue === '12') return ['A', 'B']
+    return ['A', 'B', 'C', 'D'] // default
+  }
 
   const addMember = () => {
     if (!currentMember.name || !currentMember.class || !currentMember.section) {
@@ -662,7 +669,12 @@ export default function RegisterPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label className="text-neutral-300 text-sm font-medium">Class</Label>
-                        <Select value={individual.class} onValueChange={(value) => setIndividual({ ...individual, class: value })}>
+                        <Select 
+                          value={individual.class} 
+                          onValueChange={(value) => {
+                            setIndividual({ ...individual, class: value, section: '' })
+                          }}
+                        >
                           <SelectTrigger className="glass-input h-12">
                             <SelectValue placeholder="Select" />
                           </SelectTrigger>
@@ -676,12 +688,16 @@ export default function RegisterPage() {
 
                       <div className="space-y-2">
                         <Label className="text-neutral-300 text-sm font-medium">Section</Label>
-                        <Select value={individual.section} onValueChange={(value) => setIndividual({ ...individual, section: value })}>
+                        <Select 
+                          value={individual.section} 
+                          onValueChange={(value) => setIndividual({ ...individual, section: value })}
+                          disabled={!individual.class}
+                        >
                           <SelectTrigger className="glass-input h-12">
                             <SelectValue placeholder="Select" />
                           </SelectTrigger>
                           <SelectContent className="glass-dropdown">
-                            {sections.map((sec) => (
+                            {getSectionsForClass(individual.class).map((sec) => (
                               <SelectItem key={sec} value={sec} className="text-white">{sec}</SelectItem>
                             ))}
                           </SelectContent>
@@ -740,7 +756,12 @@ export default function RegisterPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label className="text-neutral-300 text-sm font-medium">Leader's Class</Label>
-                        <Select value={team.leaderClass} onValueChange={(value) => setTeam({ ...team, leaderClass: value })}>
+                        <Select 
+                          value={team.leaderClass} 
+                          onValueChange={(value) => {
+                            setTeam({ ...team, leaderClass: value, leaderSection: '' })
+                          }}
+                        >
                           <SelectTrigger className="glass-input h-12">
                             <SelectValue placeholder="Select" />
                           </SelectTrigger>
@@ -754,12 +775,16 @@ export default function RegisterPage() {
 
                       <div className="space-y-2">
                         <Label className="text-neutral-300 text-sm font-medium">Leader's Section</Label>
-                        <Select value={team.leaderSection} onValueChange={(value) => setTeam({ ...team, leaderSection: value })}>
+                        <Select 
+                          value={team.leaderSection} 
+                          onValueChange={(value) => setTeam({ ...team, leaderSection: value })}
+                          disabled={!team.leaderClass}
+                        >
                           <SelectTrigger className="glass-input h-12">
                             <SelectValue placeholder="Select" />
                           </SelectTrigger>
                           <SelectContent className="glass-dropdown">
-                            {sections.map((sec) => (
+                            {getSectionsForClass(team.leaderClass).map((sec) => (
                               <SelectItem key={sec} value={sec} className="text-white">{sec}</SelectItem>
                             ))}
                           </SelectContent>
@@ -815,7 +840,12 @@ export default function RegisterPage() {
                         />
 
                         <div className="grid grid-cols-2 gap-3">
-                          <Select value={currentMember.class} onValueChange={(value) => setCurrentMember({ ...currentMember, class: value })}>
+                          <Select 
+                            value={currentMember.class} 
+                            onValueChange={(value) => {
+                              setCurrentMember({ ...currentMember, class: value, section: '' })
+                            }}
+                          >
                             <SelectTrigger className="glass-input h-11">
                               <SelectValue placeholder="Class" />
                             </SelectTrigger>
@@ -826,12 +856,16 @@ export default function RegisterPage() {
                             </SelectContent>
                           </Select>
 
-                          <Select value={currentMember.section} onValueChange={(value) => setCurrentMember({ ...currentMember, section: value })}>
+                          <Select 
+                            value={currentMember.section} 
+                            onValueChange={(value) => setCurrentMember({ ...currentMember, section: value })}
+                            disabled={!currentMember.class}
+                          >
                             <SelectTrigger className="glass-input h-11">
                               <SelectValue placeholder="Section" />
                             </SelectTrigger>
                             <SelectContent className="glass-dropdown">
-                              {sections.map((sec) => (
+                              {getSectionsForClass(currentMember.class).map((sec) => (
                                 <SelectItem key={sec} value={sec} className="text-white">{sec}</SelectItem>
                               ))}
                             </SelectContent>

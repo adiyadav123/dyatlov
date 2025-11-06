@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Ticket, Send, Plus, MessageCircle, Menu, X, ArrowLeft, Bell } from 'lucide-react'
+import { Ticket, Send, Plus, MessageCircle, Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -46,8 +46,10 @@ export default function SupportPage() {
     setParticipantId(pId)
     setTeamId(tId)
 
+    // Check notification support and permission
     if (typeof window !== 'undefined' && 'Notification' in window) {
       setNotificationPermission(Notification.permission)
+      // Show prompt if permission is default (not yet asked)
       if (Notification.permission === 'default') {
         setShowNotificationPrompt(true)
       }
@@ -91,18 +93,23 @@ export default function SupportPage() {
     }
   }
 
+  // Helper function to properly sort messages by creation time
   const sortMessagesByTime = (messagesToSort) => {
     return [...messagesToSort].sort((a, b) => {
       try {
+        // Parse both timestamps
         let timeA = a.created_at
         let timeB = b.created_at
         
+        // Handle string timestamps
         if (typeof timeA === 'string') {
+          // Normalize ISO format
           if (!timeA.endsWith('Z') && !timeA.includes('+')) {
             timeA = timeA + 'Z'
           }
         }
         if (typeof timeB === 'string') {
+          // Normalize ISO format
           if (!timeB.endsWith('Z') && !timeB.includes('+')) {
             timeB = timeB + 'Z'
           }
@@ -111,6 +118,7 @@ export default function SupportPage() {
         const dateA = new Date(timeA).getTime()
         const dateB = new Date(timeB).getTime()
         
+        // Handle invalid dates
         if (isNaN(dateA)) {
           console.warn('[Support] Invalid date A:', a.created_at)
           return 1
@@ -120,6 +128,7 @@ export default function SupportPage() {
           return -1
         }
         
+        // Sort by timestamp (ascending = oldest first)
         return dateA - dateB
       } catch (err) {
         console.error('[Support] Error sorting messages:', err, { a, b })
@@ -139,7 +148,25 @@ export default function SupportPage() {
       if (error) throw error
 
       const newMessages = data || []
+      
+      // Log all fetched messages with timestamps
+      console.log('[Support] Messages fetched from DB:', newMessages.map(m => ({
+        id: m.id,
+        sender: m.sender_type,
+        created_at: m.created_at,
+        message: m.message.substring(0, 40)
+      })))
+      
+      // Sort using our helper function
       const sortedMessages = sortMessagesByTime(newMessages)
+      
+      // Debug log to verify sort order
+      console.log('[Support] Messages after fetch and sort:', sortedMessages.map(m => ({
+        id: m.id,
+        sender: m.sender_type,
+        created_at: m.created_at,
+        message: m.message.substring(0, 40)
+      })))
       
       setMessages(sortedMessages)
 
@@ -227,6 +254,7 @@ export default function SupportPage() {
       }
 
       const clientTimestamp = new Date().toISOString()
+      console.log('[Support] Sending message with client timestamp:', clientTimestamp)
 
       const { data, error } = await supabase
         .from('ticket_messages')
@@ -242,7 +270,24 @@ export default function SupportPage() {
 
       if (error) throw error
 
+      // Log the returned data to see if timestamp changed
+      console.log('[Support] Message returned from DB:', {
+        id: data[0].id,
+        created_at: data[0].created_at,
+        client_created_at: clientTimestamp,
+        timestamp_changed: data[0].created_at !== clientTimestamp
+      })
+
+      // Add new message and re-sort using our helper function
       const updatedMessages = sortMessagesByTime([...messages, data[0]])
+      
+      console.log('[Support] Message sent, new order:', updatedMessages.map(m => ({
+        id: m.id,
+        sender: m.sender_type,
+        created_at: m.created_at,
+        message: m.message.substring(0, 40)
+      })))
+      
       setMessages(updatedMessages)
       setNewMessage('')
     } catch (err) {
@@ -279,391 +324,309 @@ export default function SupportPage() {
     }
   }
 
-  const formatMessageTime = (dateString) => {
-    try {
-      let normalizedDate = dateString
-      if (typeof dateString === 'string' && !dateString.endsWith('Z') && !dateString.includes('+')) {
-        normalizedDate = dateString + 'Z'
-      }
-      const date = new Date(normalizedDate)
-      if (isNaN(date.getTime())) {
-        return 'Invalid time'
-      }
-      return date.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true
-      })
-    } catch (err) {
-      console.error('Error formatting time:', err)
-      return 'Time error'
-    }
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-white text-sm sm:text-base">Loading support...</div>
+        <div className="text-white">Loading support...</div>
       </div>
     )
   }
 
   return (
     <div className="h-screen bg-[#0a0a0a] text-white flex flex-col overflow-hidden">
-      {/* Header */}
-      <header className="bg-[#1a1a1b]/95 backdrop-blur-md border-b border-white/10 shrink-0 sticky top-0 z-50">
+      <header className="sticky top-0 z-50 bg-[#1a1a1b]/95 backdrop-blur-md border-b border-white/10 shrink-0">
         <div className="px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Mobile: Show menu or back button */}
-            {selectedTicket ? (
-              <button
-                onClick={() => setSelectedTicket(null)}
-                className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowSidebar(!showSidebar)}
-                className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                {showSidebar ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            )}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
             <Ticket className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
             <h1 className="text-base sm:text-lg font-bold">Support Center</h1>
           </div>
           <button
             onClick={() => router.push('/start')}
-            className="text-xs sm:text-sm text-neutral-400 hover:text-white transition-colors px-3 py-1.5"
+            className="text-xs sm:text-sm text-neutral-400 hover:text-white transition-colors"
           >
             ← Back
           </button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-hidden flex">
-        {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-80 bg-[#1a1a1b] border-r border-white/10 shrink-0">
-          <div className="h-full flex flex-col">
-            {/* New Ticket Button */}
-            <div className="p-4 border-b border-white/10">
-              <Button
-                onClick={() => setShowCreateForm(!showCreateForm)}
-                className="w-full h-11 glass-button font-medium text-sm flex items-center justify-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                New Ticket
-              </Button>
+      <div className="flex-1 overflow-hidden px-4 py-4 sm:py-6 flex flex-col min-h-0">
+        {/* Notification Permission Prompt */}
+        {showNotificationPrompt && notificationPermission === 'default' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mb-3 p-3 sm:p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center justify-between gap-3 sm:gap-4 shrink-0"
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-xl sm:text-2xl shrink-0">🔔</div>
+              <div className="min-w-0">
+                <p className="font-medium text-xs sm:text-sm">Enable Notifications</p>
+                <p className="text-xs text-neutral-400">Get notified when admins respond</p>
+              </div>
             </div>
-
-            {/* Tickets List */}
-            <div className="flex-1 overflow-y-auto p-3">
-              {tickets.length === 0 ? (
-                <div className="text-center py-12 text-neutral-500">
-                  <Ticket className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">No tickets yet</p>
-                  <p className="text-xs mt-1">Create one to get started</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {tickets.map((ticket) => (
-                    <button
-                      key={ticket.id}
-                      onClick={() => handleSelectTicket(ticket)}
-                      className={`w-full text-left p-4 rounded-lg transition-all ${
-                        selectedTicket?.id === ticket.id
-                          ? 'bg-blue-500/20 border border-blue-500/30'
-                          : 'bg-white/5 hover:bg-white/10 border border-white/10'
-                      }`}
-                    >
-                      <div className="font-semibold text-sm mb-1 line-clamp-1">{ticket.title}</div>
-                      <div className="text-xs text-neutral-400 mb-2">
-                        {new Date(ticket.created_at).toLocaleDateString()}
-                      </div>
-                      {!ticket.resolved && (
-                        <span className="inline-block px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded-full border border-yellow-500/30">
-                          Open
-                        </span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </aside>
-
-        {/* Mobile Sidebar Overlay */}
-        <AnimatePresence>
-          {showSidebar && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowSidebar(false)}
-                className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-              />
-              <motion.div
-                initial={{ x: -300 }}
-                animate={{ x: 0 }}
-                exit={{ x: -300 }}
-                transition={{ type: 'tween', duration: 0.2 }}
-                className="fixed left-0 top-0 bottom-0 w-80 bg-[#1a1a1b] border-r border-white/10 z-50 lg:hidden"
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={handleRequestNotificationPermission}
+                className="px-2 sm:px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded transition-colors"
               >
-                <div className="h-full flex flex-col">
-                  <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                    <h2 className="font-bold">Your Tickets</h2>
-                    <button
-                      onClick={() => setShowSidebar(false)}
-                      className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
+                Enable
+              </button>
+              <button
+                onClick={() => setShowNotificationPrompt(false)}
+                className="px-2 sm:px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded transition-colors"
+              >
+                Later
+              </button>
+            </div>
+          </motion.div>
+        )}
 
-                  <div className="p-4 border-b border-white/10">
+        <div className="flex-1 flex gap-4 lg:gap-6 relative overflow-hidden min-h-0">
+          
+          <AnimatePresence>
+            {(showSidebar || window.innerWidth >= 1024) && (
+              <motion.div
+                initial={{ x: -300, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -300, opacity: 0 }}
+                className="fixed lg:static inset-y-0 top-[65px] sm:top-[73px] left-0 z-40 lg:z-0 w-72 lg:w-80 shrink-0 lg:shrink-0 h-[calc(100vh-65px)] sm:h-[calc(100vh-73px)] lg:h-full"
+              >
+                <div className="h-full flex flex-col bg-[#1a1a1b] border border-white/10 rounded-none lg:rounded-lg overflow-hidden">
+                  <div className="p-4 border-b border-white/10 flex items-center justify-between lg:justify-center shrink-0">
                     <Button
-                      onClick={() => {
-                        setShowCreateForm(true)
-                        setShowSidebar(false)
-                      }}
-                      className="w-full h-11 glass-button font-medium text-sm flex items-center justify-center gap-2"
+                      onClick={() => setShowCreateForm(!showCreateForm)}
+                      className="flex-1 lg:w-full h-10 glass-button font-medium text-sm flex items-center justify-center gap-2 ticket_button"
                     >
                       <Plus className="w-4 h-4" />
                       New Ticket
                     </Button>
+                    <button
+                      onClick={() => setShowSidebar(false)}
+                      className="lg:hidden ml-2 p-2 hover:bg-white/10 rounded-lg"
+                    >
+                      <X className="w-5 h-5 ticket_cross" />
+                    </button>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto p-3">
+                  <div className="space-y-1 p-2 overflow-y-auto flex-1 min-h-0">
                     {tickets.length === 0 ? (
-                      <div className="text-center py-12 text-neutral-500">
-                        <Ticket className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                        <p className="text-sm">No tickets yet</p>
+                      <div className="text-center py-8 text-neutral-500 text-sm">
+                        <Ticket className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                        <p>No tickets yet</p>
                       </div>
                     ) : (
-                      <div className="space-y-2">
-                        {tickets.map((ticket) => (
-                          <button
-                            key={ticket.id}
-                            onClick={() => handleSelectTicket(ticket)}
-                            className="w-full text-left p-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
-                          >
-                            <div className="font-semibold text-sm mb-1 line-clamp-1">{ticket.title}</div>
-                            <div className="text-xs text-neutral-400 mb-2">
-                              {new Date(ticket.created_at).toLocaleDateString()}
-                            </div>
-                            {!ticket.resolved && (
-                              <span className="inline-block px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded-full border border-yellow-500/30">
-                                Open
-                              </span>
-                            )}
-                          </button>
-                        ))}
-                      </div>
+                      tickets.map((ticket) => (
+                        <button
+                          key={ticket.id}
+                          onClick={() => handleSelectTicket(ticket)}
+                          className={`w-full text-left p-3 rounded-lg transition-all text-sm ${
+                            selectedTicket?.id === ticket.id
+                              ? 'bg-blue-500/20 border border-blue-500/30'
+                              : 'bg-white/5 hover:bg-white/10 border border-white/10'
+                          }`}
+                        >
+                          <div className="font-medium text-sm line-clamp-1">{ticket.title}</div>
+                          <div className="text-xs text-neutral-500 mt-1">
+                            {new Date(ticket.created_at).toLocaleDateString()}
+                          </div>
+                          {!ticket.resolved && (
+                            <div className="text-xs text-yellow-400 mt-1">Open</div>
+                          )}
+                        </button>
+                      ))
                     )}
                   </div>
                 </div>
               </motion.div>
-            </>
+            )}
+          </AnimatePresence>
+
+          {showSidebar && (
+            <div
+              onClick={() => setShowSidebar(false)}
+              className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            />
           )}
-        </AnimatePresence>
 
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-hidden">
-          <div className="h-full overflow-y-auto p-4 sm:p-6">
-            <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
-              {/* Notification Prompt */}
-              {showNotificationPrompt && notificationPermission === 'default' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex items-center justify-between gap-4"
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <Bell className="w-5 h-5 text-blue-400 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="font-medium text-sm">Enable Notifications</p>
-                      <p className="text-xs text-neutral-400">Get notified when admins respond</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 shrink-0">
-                    <button
-                      onClick={handleRequestNotificationPermission}
-                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-lg transition-colors"
+          <div className="flex-1 space-y-4 sm:space-y-6 min-w-0">
+            {showCreateForm && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[#1a1a1b] border border-white/10 rounded-lg p-4 sm:p-6"
+              >
+                <h3 className="text-base sm:text-lg font-bold mb-4">Create New Ticket</h3>
+                <form onSubmit={handleCreateTicket} className="space-y-4">
+                  {createTicketError && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-red-300 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20"
                     >
-                      Enable
-                    </button>
-                    <button
-                      onClick={() => setShowNotificationPrompt(false)}
-                      className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg transition-colors"
+                      ✕ {createTicketError}
+                    </motion.div>
+                  )}
+                  <div className="space-y-2">
+                    <Label className="text-neutral-300 text-sm font-medium">Subject</Label>
+                    <Input
+                      type="text"
+                      placeholder="e.g., Issue with clue finding"
+                      value={newTicketTitle}
+                      onChange={(e) => setNewTicketTitle(e.target.value)}
+                      required
+                      className="glass-input h-11 text-sm sm:text-base"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-neutral-300 text-sm font-medium">Description</Label>
+                    <textarea
+                      placeholder="Describe your issue in detail..."
+                      value={newTicketDescription}
+                      onChange={(e) => setNewTicketDescription(e.target.value)}
+                      required
+                      rows="4"
+                      className="glass-input p-3 text-sm sm:text-base w-full resize-y min-h-[100px]"
+                    />
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button
+                      type="submit"
+                      className="flex-1 h-10 glass-button font-medium text-sm"
                     >
-                      Later
-                    </button>
+                      Create Ticket
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setShowCreateForm(false)}
+                      className="flex-1 h-10 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm"
+                    >
+                      Cancel
+                    </Button>
                   </div>
-                </motion.div>
-              )}
+                </form>
+              </motion.div>
+            )}
 
-              {/* Create Ticket Form */}
-              {showCreateForm && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-[#1a1a1b] border border-white/10 rounded-xl p-4 sm:p-6"
-                >
-                  <h3 className="text-lg sm:text-xl font-bold mb-5">Create New Ticket</h3>
-                  <form onSubmit={handleCreateTicket} className="space-y-4">
-                    {createTicketError && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-300 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20"
-                      >
-                        ✕ {createTicketError}
-                      </motion.div>
-                    )}
-                    
-                    <div className="space-y-2">
-                      <Label className="text-neutral-300 text-sm font-medium">Subject</Label>
-                      <Input
-                        type="text"
-                        placeholder="e.g., Issue with clue finding"
-                        value={newTicketTitle}
-                        onChange={(e) => setNewTicketTitle(e.target.value)}
-                        required
-                        className="glass-input h-11 text-base"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-neutral-300 text-sm font-medium">Description</Label>
-                      <textarea
-                        placeholder="Describe your issue in detail..."
-                        value={newTicketDescription}
-                        onChange={(e) => setNewTicketDescription(e.target.value)}
-                        required
-                        rows="6"
-                        className="glass-input p-3 text-base w-full resize-y min-h-[150px]"
-                      />
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <Button
-                        type="submit"
-                        className="flex-1 h-11 glass-button font-medium"
-                      >
-                        Create Ticket
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={() => setShowCreateForm(false)}
-                        className="flex-1 h-11 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </form>
-                </motion.div>
-              )}
-
-              {/* Ticket View */}
-              {selectedTicket ? (
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="bg-[#1a1a1b] border border-white/10 rounded-xl overflow-hidden flex flex-col"
-                  style={{ height: showCreateForm ? 'calc(100vh - 600px)' : 'calc(100vh - 200px)', minHeight: '500px' }}
-                >
-                  {/* Ticket Header */}
-                  <div className="p-4 sm:p-6 border-b border-white/10 bg-gradient-to-r from-blue-950/20 to-transparent">
-                    <h2 className="text-lg sm:text-xl font-bold mb-2">{selectedTicket.title}</h2>
-                    <div className="flex items-center gap-4 text-xs sm:text-sm text-neutral-400">
-                      <span>{new Date(selectedTicket.created_at).toLocaleDateString()}</span>
-                      <span className={selectedTicket.resolved ? 'text-green-400' : 'text-yellow-400'}>
-                        {selectedTicket.resolved ? '✓ Resolved' : '● Open'}
-                      </span>
-                    </div>
+            {selectedTicket ? (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-[#1a1a1b] border border-white/10 rounded-lg overflow-hidden flex flex-col flex-1 min-w-0 min-h-0"
+              >
+                <div className="shrink-0 p-4 sm:p-6 border-b border-white/10 bg-gradient-to-r from-blue-950/20 to-transparent">
+                  <h2 className="text-base sm:text-xl font-bold line-clamp-2">{selectedTicket.title}</h2>
+                  <div className="flex items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-neutral-400 flex-wrap">
+                    <span>{new Date(selectedTicket.created_at).toLocaleDateString()}</span>
+                    <span className={selectedTicket.resolved ? 'text-green-400' : 'text-yellow-400'}>
+                      {selectedTicket.resolved ? '✓ Resolved' : '● Open'}
+                    </span>
                   </div>
+                </div>
 
-                  {/* Messages Area */}
-                  <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                  <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 flex flex-col min-h-0 support-scroll">
                     {/* Initial Issue */}
-                    <div className="flex justify-start">
-                      <div className="max-w-[85%] sm:max-w-[75%]">
-                        <div className="text-xs font-semibold text-amber-400 mb-1 px-1">📋 Initial Issue</div>
-                        <div className="bg-amber-600 text-white px-4 py-3 rounded-2xl rounded-tl-sm shadow-lg">
-                          <p className="text-sm break-words whitespace-pre-wrap">{selectedTicket.description}</p>
-                        </div>
+                    <div className="flex justify-start mb-4">
+                      <div className="bg-amber-600 text-white px-4 py-2 rounded-2xl rounded-tl-none text-sm max-w-[85%] sm:max-w-[75%] shadow-lg">
+                        <p className="text-xs font-semibold mb-1">📋 Initial Issue</p>
+                        <p className="break-words whitespace-pre-wrap">{selectedTicket.description}</p>
                       </div>
                     </div>
 
                     {/* Messages */}
                     {messages.map((msg, idx) => {
-                      const isAdmin = msg.sender_type === 'admin'
-                      
-                      return (
-                        <div key={`${msg.id}-${idx}`} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                          <div className={`max-w-[85%] sm:max-w-[75%] flex flex-col gap-1 ${isAdmin ? 'items-start' : 'items-end'}`}>
-                            <span className={`text-xs font-semibold px-1 ${isAdmin ? 'text-blue-400' : 'text-green-400'}`}>
-                              {isAdmin ? '👤 Admin' : '👤 You'}
-                            </span>
-                            <div
-                              className={`px-4 py-3 rounded-2xl text-sm shadow-lg ${
-                                isAdmin
-                                  ? 'bg-blue-500 text-white rounded-tl-sm'
-                                  : 'bg-green-500 text-white rounded-tr-sm'
-                              }`}
-                            >
-                              {msg.message}
-                            </div>
-                            <span className="text-xs text-neutral-500 px-1">
-                              {formatMessageTime(msg.created_at)}
-                            </span>
+                    const isAdmin = msg.sender_type === 'admin'
+                    
+                    const formatMessageTime = (dateString) => {
+                      try {
+                        let normalizedDate = dateString
+                        if (typeof dateString === 'string' && !dateString.endsWith('Z') && !dateString.includes('+')) {
+                          normalizedDate = dateString + 'Z'
+                        }
+                        const date = new Date(normalizedDate)
+                        if (isNaN(date.getTime())) {
+                          return 'Invalid time'
+                        }
+                        return date.toLocaleTimeString('en-US', { 
+                          hour: '2-digit', 
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: true
+                        })
+                      } catch (err) {
+                        console.error('Error formatting time:', err)
+                        return 'Time error'
+                      }
+                    }
+
+                    return (
+                      <div key={`${msg.id}-${idx}`} className={`flex w-full ${isAdmin ? 'justify-start' : 'justify-end'}`}>
+                        <div className={`flex flex-col max-w-[95%] gap-1 min-w-0`}>
+                          {/* Sender name */}
+                          <div className={`text-xs font-semibold px-1 ${isAdmin ? 'text-blue-400 text-left' : 'text-gray-400 text-right'}`}>
+                            {isAdmin ? '👤 Admin' : '👤 You'}
+                          </div>
+                          
+                          {/* Message bubble */}
+                          <div
+                            className={`px-4 py-2 rounded-2xl text-sm font-medium break-words ${
+                              isAdmin
+                                ? 'bg-blue-500 text-white rounded-tl-none shadow-lg'
+                                : 'bg-green-500 text-white rounded-tr-none shadow-lg'
+                            }`}
+                          >
+                            {msg.message}
+                          </div>
+                          
+                          {/* Timestamp */}
+                          <div className={`text-xs text-neutral-500 px-1 ${isAdmin ? 'text-left' : 'text-right'}`}>
+                            {formatMessageTime(msg.created_at)}
                           </div>
                         </div>
-                      )
-                    })}
+                      </div>
+                    )
+                  })}
                     <div ref={messagesEndRef} />
                   </div>
 
-                  {/* Message Input */}
-                  <form onSubmit={handleSendMessage} className="border-t border-white/10 p-4 sm:p-6 space-y-3">
-                    {messageError && (
-                      <div className="text-red-300 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20">
-                        ✕ {messageError}
-                      </div>
-                    )}
-                    <textarea
-                      placeholder={selectedTicket.resolved ? "This ticket is resolved" : "Type your message..."}
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      required
-                      disabled={selectedTicket.resolved}
-                      rows="3"
-                      className="w-full glass-input p-3 text-sm resize-none"
-                    />
-                    <Button
-                      type="submit"
-                      disabled={sendingMessage || selectedTicket.resolved}
-                      className="w-full sm:w-auto h-11 glass-button flex items-center justify-center gap-2 px-6"
-                    >
-                      <Send className="w-4 h-4" />
-                      {sendingMessage ? 'Sending...' : 'Send Message'}
-                    </Button>
+                  <form onSubmit={handleSendMessage} className="shrink-0 border-t border-white/10 p-4 sm:p-6 space-y-3">
+                  <textarea
+                    placeholder="Type your message..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    required
+                    disabled={selectedTicket.resolved}
+                    rows="2"
+                    className="w-full glass-input p-3 text-sm resize-y min-h-[60px] max-h-[150px]"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={sendingMessage || selectedTicket.resolved}
+                    className="w-full sm:w-auto h-10 glass-button flex items-center justify-center gap-2 text-sm px-6"
+                  >
+                    <Send className="w-4 h-4" />
+                    {sendingMessage ? 'Sending...' : 'Send'}
+                  </Button>
                   </form>
-                </motion.div>
-              ) : (
-                <div className="bg-[#1a1a1b] border border-white/10 rounded-xl p-12 text-center min-h-[500px] flex flex-col items-center justify-center">
-                  <MessageCircle className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                  <p className="text-neutral-500 text-base mb-2">No ticket selected</p>
-                  <p className="text-neutral-600 text-sm">Select a ticket from the sidebar or create a new one</p>
                 </div>
-              )}
-            </div>
+              </motion.div>
+            ) : (
+              <div className="bg-[#1a1a1b] border border-white/10 rounded-lg p-12 text-center min-h-[400px] flex flex-col items-center justify-center">
+                <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                <p className="text-neutral-500 text-sm sm:text-base">Select or create a ticket to start chatting</p>
+              </div>
+            )}
           </div>
-        </main>
+        </div>
       </div>
 
       <style jsx global>{`
@@ -702,31 +665,15 @@ export default function SupportPage() {
         }
 
         .glass-button:disabled {
-          opacity: 0.5;
+        opacity: 0.5;
           cursor: not-allowed;
         }
 
-        * {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-        }
-
-        *::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
-        }
-
-        *::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        *::-webkit-scrollbar-thumb {
-          background-color: rgba(255, 255, 255, 0.2);
-          border-radius: 3px;
-        }
-
-        *::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(255, 255, 255, 0.3);
+        /* Scrolling helpers for mobile chat */
+        .support-scroll {
+          -webkit-overflow-scrolling: touch; /* momentum scrolling on iOS */
+          touch-action: pan-y; /* allow vertical pan */
+          overscroll-behavior: contain; /* keep scroll inside chat */
         }
       `}</style>
     </div>
