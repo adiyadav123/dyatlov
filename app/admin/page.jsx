@@ -402,7 +402,7 @@ function AdminDashboard({ onLogout }) {
   })
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col overflow-x-hidden">
       {/* Header */}
       <header className="bg-[#1a1a1b]/95 backdrop-blur-md border-b border-white/10 flex-shrink-0">
         <div className="px-4 py-3 flex items-center justify-between">
@@ -420,7 +420,7 @@ function AdminDashboard({ onLogout }) {
       {/* Content */}
       {activeTab === 'notifications' ? (
         <div className="flex-1 overflow-auto px-4 py-4 min-h-0">
-          <div className="flex flex-col lg:flex-row gap-4 max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-4 max-w-7xl mx-auto w-full">
             {/* Sidebar */}
             <div className="w-full lg:w-56 shrink-0">
               <div className="bg-[#1a1a1b] border border-white/10 rounded-lg overflow-hidden">
@@ -515,7 +515,7 @@ function AdminDashboard({ onLogout }) {
         </div>
       ) : (
         // TICKETS VIEW
-        <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col min-h-0 overflow-x-hidden">
           {/* Tab Navigation - Mobile Only */}
           <div className="lg:hidden px-4 py-3 flex-shrink-0">
             <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex overflow-hidden">
@@ -582,11 +582,11 @@ function AdminDashboard({ onLogout }) {
           </div>
 
           {/* Tickets Layout */}
-          <div className="flex-1 px-4 pb-4 min-h-0">
+          <div className="flex-1 px-4 pb-4 min-h-0 max-h-[calc(100vh-8rem)] ">
             {/* Mobile */}
-            <div className="lg:hidden min-h-[600px]">
+            <div className="lg:hidden h-full max-h-full">
               {showTicketsList ? (
-                <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col min-h-[600px]">
+                <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full max-h-full">
                   <h3 className="text-lg font-bold p-4 border-b border-white/10 flex-shrink-0">Tickets</h3>
                   <div className="flex-1 overflow-y-auto p-4 space-y-2">
                     {loadingTickets ? (
@@ -622,7 +622,7 @@ function AdminDashboard({ onLogout }) {
                 </div>
               ) : (
                 selectedTicket && (
-                  <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col min-h-[600px]">
+                  <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full max-h-full">
                     {/* Header */}
                     <div className="p-3 border-b border-white/10 flex items-center gap-2 flex-shrink-0">
                       <button onClick={() => setShowTicketsList(true)} className="text-neutral-400 hover:text-white transition-colors">
@@ -658,13 +658,13 @@ function AdminDashboard({ onLogout }) {
                     </div>
 
                     {/* Description */}
-                    <div className="px-3 py-2 border-b border-white/10 flex-shrink-0">
+                    <div className="px-3 py-2 border-b border-white/10 shrink-0">
                       <div className="text-xs text-neutral-500 mb-1 uppercase font-medium">Original Message</div>
                       <div className="bg-white/5 p-2 rounded text-xs max-h-20 overflow-y-auto">{selectedTicket.description}</div>
                     </div>
 
                     {/* Messages */}
-                    <div className="h-[400px] overflow-y-auto bg-[#0f0f10] p-3 admin-messages-scroll">
+                    <div className="flex-1 overflow-scroll bg-[#0f0f10] p-3 admin-messages-scroll min-h-0">
                       {ticketMessages.length === 0 ? (
                         <div className="text-center text-neutral-500 text-xs py-8">No messages yet</div>
                       ) : (
@@ -726,7 +726,7 @@ function AdminDashboard({ onLogout }) {
             </div>
 
             {/* Desktop - Fixed Height Grid */}
-            <div className="hidden lg:flex gap-4 min-h-[700px]">
+            <div className="hidden lg:flex gap-4 h-full max-h-full max-w-full overflow-x-hidden">
               {/* Sidebar */}
               <div className="w-56 shrink-0 bg-[#1a1a1b] border border-white/10 rounded-lg overflow-hidden">
                 <div className="bg-[#1a1a1b] border-b border-white/10 p-4">
@@ -757,7 +757,7 @@ function AdminDashboard({ onLogout }) {
               </div>
 
               {/* Tickets List */}
-              <div className="w-80 shrink-0 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col min-h-[700px]">
+              <div className="w-80 shrink-0 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full max-h-full">
                 <h3 className="text-lg font-bold p-4 border-b border-white/10 flex-shrink-0">Tickets</h3>
                 <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0">
                   {loadingTickets ? (
@@ -795,7 +795,7 @@ function AdminDashboard({ onLogout }) {
 
               {/* Ticket Detail */}
               {selectedTicket ? (
-                <div className="flex-1 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col min-h-[700px]">
+                <div className="flex-1 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full max-h-full min-w-0 overflow-hidden">
                   {/* Header */}
                   <div className="p-4 border-b border-white/10 flex-shrink-0">
                     <div className="flex items-start justify-between gap-3">
@@ -834,7 +834,7 @@ function AdminDashboard({ onLogout }) {
                   </div>
 
                   {/* Messages - Takes remaining space */}
-                  <div className="h-[500px] overflow-y-auto bg-[#0f0f10] p-4 admin-messages-scroll">
+                  <div className="flex-1 overflow-y-auto bg-[#0f0f10] p-4 admin-messages-scroll min-h-0">
                     {ticketMessages.length === 0 ? (
                       <div className="text-center text-neutral-500 py-12">No messages yet</div>
                     ) : (

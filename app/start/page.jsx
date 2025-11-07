@@ -179,7 +179,7 @@ export default function StartPage() {
       if (permission === "granted") {
         new Notification("Notifications Enabled!", {
           body: "You will now receive browser notifications from admins",
-          icon: "/cia.png",
+          icon: "/api/protected?file=cia.png",
         });
       }
     }
@@ -322,7 +322,7 @@ export default function StartPage() {
           ) {
             new Notification("THE DYATLOV CHRONICLES", {
               body: `${notif.title}: ${notif.message}`,
-              icon: "/cia.png",
+              icon: "/api/protected?file=cia.png",
               tag: `notif-${notif.id}`,
               requireInteraction: false,
             });
@@ -360,8 +360,8 @@ export default function StartPage() {
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Image
-                src="/cia.png"
+              <img
+                src="/api/protected?file=cia.png"
                 width={62}
                 height={62}
                 alt="CIA LOGO"
@@ -1169,7 +1169,7 @@ export default function StartPage() {
                     <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 rounded-lg" />
 
                     <img
-                      src="/soviet-archive_isapage.png"
+                      src="/api/protected?file=soviet-archive_isapage.png"
                       alt="Reddit Post - Dyatlov Pass Evidence"
                       className="w-full rounded-lg border border-white/20 shadow-2xl"
                     />
@@ -1189,14 +1189,24 @@ export default function StartPage() {
 
                   {/* Download Options */}
                   <div className="flex gap-3">
-                    <a
-                      href="/soviet-archive_isapage.png"
-                      download="/soviet-archive_isapage.png"
+                    <button
+                      onClick={async () => {
+                        const response = await fetch('/api/protected?file=soviet-archive_isapage.png');
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'soviet-archive_isapage.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                      }}
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors"
                     >
                       <ImageIcon className="w-4 h-4" />
                       Download Image
-                    </a>
+                    </button>
                   </div>
                 </div>
               </motion.div>

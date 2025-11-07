@@ -179,7 +179,7 @@ export default function SupportPage() {
           if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Support Response', {
               body: msg.message,
-              icon: '/cia.png',
+              icon: '/api/protected?file=cia.png',
               tag: `ticket-${ticketId}`,
               requireInteraction: false,
             })
@@ -314,8 +314,8 @@ export default function SupportPage() {
         if (permission === 'granted') {
           new Notification('Notifications Enabled! 🔔', {
             body: 'You will now receive notifications for admin responses',
-            icon: '/cia.png',
-            badge: '/cia.png'
+            icon: '/api/protected?file=cia.png',
+            badge: '/api/protected?file=cia.png'
           })
           setShowNotificationPrompt(false)
         }

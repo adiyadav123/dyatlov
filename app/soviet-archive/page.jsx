@@ -36,30 +36,39 @@ export default function SovietArchivePage() {
     const loadArchiveData = () => {
       
       const newspapers = [
-        { id: 1, title: 'Soviet News Report - 1959', file: '/newspapers/1.png', category: 'newspapers', date: '1959-01-15' },
-        { id: 2, title: 'Soviet News Report - 1959', file: '/newspapers/2.png', category: 'newspapers', date: '1959-02-20' },
-        { id: 3, title: 'Soviet News Report - 1959', file: '/newspapers/3.png', category: 'newspapers', date: '1959-03-10' },
-        { id: 4, title: 'Soviet News Report - 1959', file: '/newspapers/4.png', category: 'newspapers', date: '1959-04-05' },
-        { id: 5, title: 'Soviet News Report - 1959', file: '/newspapers/5.png', category: 'newspapers', date: '1959-05-12' },
-        { id: 6, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (1).jpg', category: 'newspapers', date: '1959-06-01' },
-        { id: 7, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (2).jpg', category: 'newspapers', date: '1959-06-15' },
-        { id: 8, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (3).jpg', category: 'newspapers', date: '1959-07-10' },
-        { id: 9, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (4).jpg', category: 'newspapers', date: '1959-07-25' },
-        { id: 10, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (5).jpg', category: 'newspapers', date: '1959-08-05' },
-        { id: 11, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (6).jpg', category: 'newspapers', date: '1959-08-20' },
-        { id: 12, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (7).jpg', category: 'newspapers', date: '1959-09-10' },
-        { id: 13, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (8).jpg', category: 'newspapers', date: '1959-09-25' },
-        { id: 14, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (9).jpg', category: 'newspapers', date: '1959-10-15' },
-        { id: 15, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (10).jpg', category: 'newspapers', date: '1959-11-01' },
+        { id: 1, title: 'Soviet News Report - 1959', file: 'newspapers/1.png', category: 'newspapers', date: '1959-01-15' },
+        { id: 2, title: 'Soviet News Report - 1959', file: 'newspapers/2.png', category: 'newspapers', date: '1959-02-20' },
+        { id: 3, title: 'Soviet News Report - 1959', file: 'newspapers/3.png', category: 'newspapers', date: '1959-03-10' },
+        { id: 4, title: 'Soviet News Report - 1959', file: 'newspapers/4.png', category: 'newspapers', date: '1959-04-05' },
+        { id: 5, title: 'Soviet News Report - 1959', file: 'newspapers/5.png', category: 'newspapers', date: '1959-05-12' },
+        { id: 6, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (1).jpg', category: 'newspapers', date: '1959-06-01' },
+        { id: 7, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (1).pdf', category: 'newspapers', date: '1959-06-05' },
+        { id: 8, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (2).jpg', category: 'newspapers', date: '1959-06-15' },
+        { id: 9, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (3).jpg', category: 'newspapers', date: '1959-07-10' },
+        { id: 10, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (3).pdf', category: 'newspapers', date: '1959-07-15' },
+        { id: 11, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (4).jpg', category: 'newspapers', date: '1959-07-25' },
+        { id: 12, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (4).pdf', category: 'newspapers', date: '1959-08-01' },
+        { id: 13, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (5).jpg', category: 'newspapers', date: '1959-08-05' },
+        { id: 14, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (5).pdf', category: 'newspapers', date: '1959-08-10' },
+        { id: 15, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (6).jpg', category: 'newspapers', date: '1959-08-20' },
+        { id: 16, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (6).pdf', category: 'newspapers', date: '1959-08-25' },
+        { id: 17, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (7).jpg', category: 'newspapers', date: '1959-09-10' },
+        { id: 18, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (7).pdf', category: 'newspapers', date: '1959-09-15' },
+        { id: 19, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (8).jpg', category: 'newspapers', date: '1959-09-25' },
+        { id: 20, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (8).pdf', category: 'newspapers', date: '1959-09-30' },
+        { id: 21, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (9).jpg', category: 'newspapers', date: '1959-10-15' },
+        { id: 22, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (9).pdf', category: 'newspapers', date: '1959-10-20' },
+        { id: 23, title: 'Soviet News Report - 1959', file: 'newspapers/Newspaper (10).jpg', category: 'newspapers', date: '1959-11-01' },
+        { id: 24, title: 'Soviet News Report - 1959', file: 'newspapers/newspaper (10).pdf', category: 'newspapers', date: '1959-11-05' },
       ]
 
      
       const reports = [
-        { id: 1, title: 'Redacted Investigation Report', file: '/redacted_investigation_reports/1.pdf', category: 'reports', date: '1959-06-01', requiresAuth: true },
+        { id: 1, title: 'Redacted Investigation Report', file: 'redacted_investigation_reports/1.pdf', category: 'reports', date: '1959-06-01', requiresAuth: true },
       ]
 
       const transfers = [
-        { id: 1, title: 'Interdepartmental Transfer Note', file: '/interdepartmental_tranfer_report/2.pdf', category: 'transfers', date: '1959-05-28', requiresAuth: true },
+        { id: 1, title: 'Interdepartmental Transfer Note', file: 'interdepartmental_tranfer_report/2.pdf', category: 'transfers', date: '1959-05-28', requiresAuth: true },
       ]
 
       setArchiveData({
@@ -100,7 +109,7 @@ export default function SovietArchivePage() {
         
         const id = participantType === 'team' ? teamId : participantId
         
-        console.log('[Soviet Archive Auth] Tracking unlock - participantId:', id, 'type:', participantType)
+        try { console.log('[Soviet Archive Auth] Tracking unlock - participantId:', id, 'type:', participantType) } catch (e) {}
         
         if (id) {
           try {
@@ -115,21 +124,21 @@ export default function SovietArchivePage() {
             })
             
             if (!response.ok) {
-              console.error('[Soviet Archive Auth] Progress tracking failed:', response.status, response.statusText)
+              try { console.error('[Soviet Archive Auth] Progress tracking failed:', response.status, response.statusText) } catch (e) {}
             } else {
-              console.log('[Soviet Archive Auth] Progress tracking successful')
+              try { console.log('[Soviet Archive Auth] Progress tracking successful') } catch (e) {}
             }
           } catch (error) {
-            console.error('[Soviet Archive Auth] Error tracking archive unlock:', error)
+            try { console.error('[Soviet Archive Auth] Error tracking archive unlock:', error) } catch (e) {}
           }
         } else {
-          console.warn('[Soviet Archive Auth] No participant ID found')
+          try { console.warn('[Soviet Archive Auth] No participant ID found') } catch (e) {}
         }
       }
       
       trackArchiveUnlock()
     } else {
-      console.log('[Soviet Archive Auth] ❌ Authentication failed - invalid credentials')
+      try { console.log('[Soviet Archive Auth] ❌ Authentication failed - invalid credentials') } catch (e) {}
       setAuthError('Invalid Case ID or Password')
       setCaseId('')
       setPassword('')
@@ -146,26 +155,53 @@ export default function SovietArchivePage() {
     
     if (normalizedCaseId.toUpperCase() === ARCHIVE_CASE_ID.toUpperCase() && 
         normalizedPassword.toLowerCase() === ARCHIVE_PASSWORD.toLowerCase()) {
-      console.log('[Report Access] ✅ Authentication successful!')
-      
-      // Proceed with view/download
-      if (action === 'view') {
-        window.open(report.file, '_blank')
-      } else if (action === 'download') {
-        const link = document.createElement('a')
-        link.href = report.file
-        link.download = report.title
-        link.click()
-      }
-      
-      // Reset and close modal
-      setShowReportModal(false)
-      setReportCaseId('')
-      setReportPassword('')
-      setSelectedReport(null)
-      setReportAction(null)
+      try { console.log('[Report Access] ✅ Authentication successful!') } catch (e) {}
+
+      // Call protected API to fetch file blob
+      (async () => {
+        try {
+          const filePath = report.file.replace(/^\//, '')
+          const res = await fetch('/api/protected', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ caseId: normalizedCaseId, password: normalizedPassword, file: filePath, action })
+          })
+
+          if (!res.ok) {
+            const json = await res.json().catch(() => ({}))
+            try { console.error('[Report Access] Protected API error', res.status, json) } catch (e) {}
+            setReportAccessError(json?.error || 'Failed to retrieve document')
+            return
+          }
+
+          const blob = await res.blob()
+          const url = URL.createObjectURL(blob)
+
+          if (action === 'view') {
+            window.open(url, '_blank')
+          } else if (action === 'download') {
+            const a = document.createElement('a')
+            a.href = url
+            a.download = report.title
+            document.body.appendChild(a)
+            a.click()
+            a.remove()
+          }
+
+          // Cleanup and close modal
+          URL.revokeObjectURL(url)
+          setShowReportModal(false)
+          setReportCaseId('')
+          setReportPassword('')
+          setSelectedReport(null)
+          setReportAction(null)
+        } catch (err) {
+          try { console.error('[Report Access] Error fetching protected file', err) } catch (e) {}
+          setReportAccessError('Error fetching document')
+        }
+      })()
     } else {
-      console.log('[Report Access] ❌ Authentication failed - invalid credentials')
+      try { console.log('[Report Access] ❌ Authentication failed - invalid credentials') } catch (e) {}
       setReportAccessError('Invalid Case ID or Password')
       setReportCaseId('')
       setReportPassword('')
@@ -179,6 +215,41 @@ export default function SovietArchivePage() {
     setReportAccessError('')
     setReportCaseId('')
     setReportPassword('')
+  }
+
+  const handleAssetAccess = (asset, action) => {
+    // For public assets (newspapers), access via GET without auth
+    if (asset.category === 'newspapers') {
+      (async () => {
+        try {
+          const res = await fetch(`/api/protected?file=${encodeURIComponent(asset.file)}`)
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}))
+            safeConsole.error('[Asset Access] Failed to fetch', res.status, err)
+            return
+          }
+          const blob = await res.blob()
+          const url = URL.createObjectURL(blob)
+          if (action === 'view') {
+            window.open(url, '_blank')
+          } else if (action === 'download') {
+            const a = document.createElement('a')
+            a.href = url
+            a.download = asset.title
+            document.body.appendChild(a)
+            a.click()
+            a.remove()
+          }
+          // Cleanup after a delay to allow download to start
+          setTimeout(() => URL.revokeObjectURL(url), 2000)
+        } catch (err) {
+          safeConsole.error('[Asset Access] Error fetching asset', err)
+        }
+      })()
+      return
+    }
+    // For restricted assets (PDFs), show auth modal
+    handleReportClick(asset, action)
   }
 
   // Check if already authenticated in this session and set mounted
@@ -303,13 +374,33 @@ export default function SovietArchivePage() {
     ...(isAuthenticated ? archiveData.transfers : archiveData.transfers.map(t => ({ ...t, locked: true })))
   ]
 
+  // Shuffle function for mixed display
+  const shuffleArray = (array) => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
   const filteredItems = allItems.filter(item => {
-    const matchesCategory = selectedCategory === item.category
     const matchesSearch = searchTerm === '' || 
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.date.includes(searchTerm)
+    
+    // If "newspapers" category is selected, show all newspapers (mixed/shuffled)
+    if (selectedCategory === 'newspapers') {
+      return item.category === 'newspapers' && matchesSearch
+    }
+    
+    // Otherwise filter by specific category
+    const matchesCategory = selectedCategory === item.category
     return matchesCategory && matchesSearch
   })
+
+  // Shuffle newspapers for mixed display, keep other categories in order
+  const displayItems = selectedCategory === 'newspapers' ? shuffleArray(filteredItems) : filteredItems
 
   return (
     <div className="min-h-screen bg-[#d4c5a9] text-[#2a1f0f]" style={{
@@ -440,7 +531,7 @@ export default function SovietArchivePage() {
                     <p>No documents match your search criteria</p>
                   </div>
                 ) : (
-                  filteredItems.map((item, idx) => (
+                  displayItems.map((item, idx) => (
                     <motion.div
                       key={`${item.category}-${item.id}`}
                       initial={{ opacity: 0, x: -20 }}
@@ -508,23 +599,20 @@ export default function SovietArchivePage() {
                               </>
                             ) : (
                               <>
-                                <a
-                                  href={item.file}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  onClick={() => handleAssetAccess(item, 'view')}
                                   className="flex-1 md:flex-none px-2 md:px-3 py-1 md:py-2 bg-[#2a1f0f] text-[#d4c5a9] text-xs font-bold hover:bg-[#8b0000] transition-colors flex items-center justify-center md:gap-1 gap-0.5"
                                 >
                                   <Eye className="w-3 h-3" />
                                   <span className="hidden md:inline">View</span>
-                                </a>
-                                <a
-                                  href={item.file}
-                                  download
+                                </button>
+                                <button
+                                  onClick={() => handleAssetAccess(item, 'download')}
                                   className="flex-1 md:flex-none px-2 md:px-3 py-1 md:py-2 border-2 border-[#2a1f0f] text-[#2a1f0f] text-xs font-bold hover:bg-[#2a1f0f] hover:text-[#d4c5a9] transition-colors flex items-center justify-center md:gap-1 gap-0.5"
                                 >
                                   <Download className="w-3 h-3" />
                                   <span className="hidden md:inline">Download</span>
-                                </a>
+                                </button>
                               </>
                             )}
                           </div>

@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /protected_files
+Disallow: /api/protected
+
+# Allow search engines to crawl public pages
+Allow: /

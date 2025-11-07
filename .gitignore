@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# protected assets (should not be committed, keep in protected_files only)
+protected_files/

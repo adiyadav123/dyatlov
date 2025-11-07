@@ -40,8 +40,8 @@ export default function RootLayout({ children }) {
     <head>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="google-site-verification" content="HONwoEinu5H8XVIyiBFCCOEfWT__Zwfxu9hE9Y8cPtU" />
-      <link rel="icon" type="image/png" href="/logo.png" />
-      <link rel="apple-touch-icon" href="/logo.png" />
+      <link rel="icon" type="image/png" href="/favicon" />
+      <link rel="apple-touch-icon" href="/favicon" />
     </head>
       <body className={`${inter.className} antialiased`}>
         {children}
