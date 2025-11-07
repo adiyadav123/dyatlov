@@ -19,7 +19,7 @@ export default function SovietArchivePage() {
     newspapers: [],
     reports: []
   })
-  // For report access modal
+  
   const [showReportModal, setShowReportModal] = useState(false)
   const [reportAccessError, setReportAccessError] = useState('')
   const [reportCaseId, setReportCaseId] = useState('')
@@ -27,14 +27,13 @@ export default function SovietArchivePage() {
   const [selectedReport, setSelectedReport] = useState(null)
   const [reportAction, setReportAction] = useState(null) // 'view' or 'download'
 
-  // Archive access credentials
   const ARCHIVE_CASE_ID = '195902'
   const ARCHIVE_PASSWORD = 'SverdlovskOblast@prosecutoroffice1959'
 
-  // Load archive data on mount
+
   useEffect(() => {
     const loadArchiveData = () => {
-      // Newspapers: 1-5 from /public/newspapers (PNG files) + 1-10 (JPG files)
+      
       const newspapers = [
         { id: 1, title: 'Soviet News Report - 1959', file: '/newspapers/1.png', category: 'newspapers', date: '1959-01-15' },
         { id: 2, title: 'Soviet News Report - 1959', file: '/newspapers/2.png', category: 'newspapers', date: '1959-02-20' },
@@ -53,7 +52,7 @@ export default function SovietArchivePage() {
         { id: 15, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (10).jpg', category: 'newspapers', date: '1959-11-01' },
       ]
 
-      // Investigation Reports: 1-2 from /public/redacted_investigation_reports (requires auth)
+     
       const reports = [
         { id: 1, title: 'Redacted Investigation Report #1', file: '/redacted_investigation_reports/1.pdf', category: 'reports', date: '1959-06-01', requiresAuth: true },
         { id: 2, title: 'Redacted Investigation Report #2', file: '/redacted_investigation_reports/2.pdf', category: 'reports', date: '1959-06-15', requiresAuth: true },
@@ -72,7 +71,7 @@ export default function SovietArchivePage() {
     e.preventDefault()
     setAuthError('')
     
-    // Case-insensitive comparison
+   
     const normalizedCaseId = caseId.trim()
     const normalizedPassword = password.trim()
     
