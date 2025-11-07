@@ -23,9 +23,21 @@ export async function POST(request) {
       });
     }
 
-    const prompt = `Enhance the following text to make it clearer, more professional, and better structured. Keep it concise but more polished. Return ONLY the enhanced text without any explanation or quotes:
+    const prompt = `You are a professional communication assistant. Transform the following message into a clear, easy-to-understand, and professional format. 
 
-"${text}"`;
+Requirements:
+- Make it simple and straightforward
+- Use clear, everyday language
+- Break down complex ideas into simple sentences
+- Keep a friendly but professional tone
+- Remove unnecessary jargon
+- Maintain the core message and intent
+- Return ONLY the enhanced message without quotes, explanations, or meta-commentary
+
+Original message:
+"${text}"
+
+Enhanced message:`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${API_KEY}`,
@@ -45,7 +57,7 @@ export async function POST(request) {
             },
           ],
           generationConfig: {
-            temperature: 0.7,
+            temperature: 0.5,
             topK: 40,
             topP: 0.95,
             maxOutputTokens: 2048,

@@ -29,7 +29,7 @@ export default function SovietArchivePage() {
 
   // Archive access credentials
   const ARCHIVE_CASE_ID = '195902'
-  const ARCHIVE_PASSWORD = 'sverdlovskoblastprosecutorsoffice1959'
+  const ARCHIVE_PASSWORD = 'sverdlovskoblastprosecutoroffice1959'
 
   // Load archive data on mount
   useEffect(() => {
@@ -79,6 +79,8 @@ export default function SovietArchivePage() {
     console.log('[Soviet Archive Auth] Login attempt')
     console.log('[Soviet Archive Auth] Entered Case ID:', normalizedCaseId, 'Expected:', ARCHIVE_CASE_ID)
     console.log('[Soviet Archive Auth] Entered Password:', normalizedPassword, 'Expected:', ARCHIVE_PASSWORD)
+
+    
     
     if (normalizedCaseId.toUpperCase() === ARCHIVE_CASE_ID.toUpperCase() && 
         normalizedPassword.toLowerCase() === ARCHIVE_PASSWORD.toLowerCase()) {
