@@ -24,7 +24,7 @@ export async function GET(req) {
     if (error) throw error
 
     // Count pages visited
-    const progressPages = ['newspaper-1959', 'voices-1959', 'soviet-archive']
+    const progressPages = ['newspaper-1959', 'voices-1959', 'soviet-archive', 'evidence-archive']
     const visitedPages = data?.map(p => p.page_visited) || []
     const pagesCompleted = visitedPages.filter(page =>
       progressPages.includes(page)

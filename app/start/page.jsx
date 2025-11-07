@@ -781,6 +781,20 @@ export default function StartPage() {
                       </span>
                     </button>
                   )}
+                  {progressData?.visitedPages.includes('evidence-archive') && (
+                    <button
+                      onClick={() => router.push("/soviet-archive/evidence")}
+                      className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-400 hover:bg-white/5 hover:text-white border border-transparent transition-all"
+                    >
+                      <span className="flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        Evidence
+                      </span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-green-500/20 text-green-400">
+                        Declassified
+                      </span>
+                    </button>
+                  )}
                 
                   <button
                     onClick={() => router.push("/support")}
