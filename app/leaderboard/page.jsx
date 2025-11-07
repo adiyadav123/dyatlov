@@ -334,7 +334,7 @@ export default function LeaderboardPage() {
               <Target className="w-5 h-5 text-blue-400" />
               <div className="text-sm text-neutral-400">Total Sites</div>
             </div>
-            <div className="text-3xl font-bold text-white">w😉</div>
+            <div className="text-3xl font-bold text-white">😉</div>
             <div className="text-xs text-neutral-500 mt-1">Evidence sites to discover</div>
           </div>
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Lock, Send, Ticket, Bell, LogOut, Eye, EyeOff, ArrowLeft, Sparkles } from 'lucide-react'
+import { Lock, Send, Ticket, Bell, LogOut, Eye, EyeOff, ArrowLeft, Sparkles, Archive, CheckCircle2, XCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -187,6 +187,8 @@ function AdminDashboard({ onLogout }) {
   const [replyError, setReplyError] = useState('')
   const [loadingTickets, setLoadingTickets] = useState(true)
   const [showTicketsList, setShowTicketsList] = useState(true)
+  const [ticketFilter, setTicketFilter] = useState('open') // 'all', 'open', 'archived'
+  const [resolvingTicket, setResolvingTicket] = useState(false)
 
   useEffect(() => {
     if (activeTab === 'tickets') {
@@ -364,8 +366,43 @@ function AdminDashboard({ onLogout }) {
     }
   }
 
+  const handleResolveTicket = async (ticketId, shouldResolve) => {
+    setResolvingTicket(true)
+    setReplyError('')
+    
+    try {
+      const response = await fetch('/api/admin/tickets/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId, resolved: shouldResolve })
+      })
+
+      if (!response.ok) throw new Error('Failed to resolve ticket')
+      
+      // Refresh tickets list
+      await fetchTickets()
+      
+      // Update selected ticket if it's the one being resolved
+      if (selectedTicket?.id === ticketId) {
+        setSelectedTicket(prev => ({ ...prev, resolved: shouldResolve }))
+      }
+    } catch (err) {
+      setReplyError('Failed to update ticket status. Please try again.')
+      setTimeout(() => setReplyError(''), 3000)
+    } finally {
+      setResolvingTicket(false)
+    }
+  }
+
+  // Filter tickets based on selected filter
+  const filteredTickets = tickets.filter(ticket => {
+    if (ticketFilter === 'open') return !ticket.resolved
+    if (ticketFilter === 'archived') return ticket.resolved
+    return true // 'all'
+  })
+
   return (
-    <div className="h-screen bg-[#0a0a0a] text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       {/* Header */}
       <header className="bg-[#1a1a1b]/95 backdrop-blur-md border-b border-white/10 flex-shrink-0">
         <div className="px-4 py-3 flex items-center justify-between">
@@ -382,8 +419,8 @@ function AdminDashboard({ onLogout }) {
 
       {/* Content */}
       {activeTab === 'notifications' ? (
-        <div className="flex-1 overflow-auto px-4 py-4">
-          <div className="flex flex-col lg:flex-row gap-4 max-w-7xl mx-auto h-full">
+        <div className="flex-1 overflow-auto px-4 py-4 min-h-0">
+          <div className="flex flex-col lg:flex-row gap-4 max-w-7xl mx-auto">
             {/* Sidebar */}
             <div className="w-full lg:w-56 shrink-0">
               <div className="bg-[#1a1a1b] border border-white/10 rounded-lg overflow-hidden">
@@ -478,7 +515,7 @@ function AdminDashboard({ onLogout }) {
         </div>
       ) : (
         // TICKETS VIEW
-        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        <div className="flex-1 flex flex-col min-h-0">
           {/* Tab Navigation - Mobile Only */}
           <div className="lg:hidden px-4 py-3 flex-shrink-0">
             <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex overflow-hidden">
@@ -516,24 +553,48 @@ function AdminDashboard({ onLogout }) {
             </div>
             <div className="bg-[#1a1a1b] border border-white/10 rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-green-400">{tickets.filter(t => t.resolved).length}</div>
-              <div className="text-xs text-neutral-500 mt-1">Resolved</div>
+              <div className="text-xs text-neutral-500 mt-1">Archived</div>
+            </div>
+          </div>
+
+          {/* Filter Tabs */}
+          <div className="px-4 mb-3 flex-shrink-0">
+            <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex overflow-hidden">
+              {[
+                { id: 'open', label: 'Open', icon: Ticket },
+                { id: 'archived', label: 'Archived', icon: Archive },
+                { id: 'all', label: 'All', icon: null }
+              ].map((filter) => (
+                <button
+                  key={filter.id}
+                  onClick={() => setTicketFilter(filter.id)}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+                    ticketFilter === filter.id
+                      ? 'bg-blue-500/20 text-blue-300'
+                      : 'text-neutral-400 hover:bg-white/5'
+                  }`}
+                >
+                  {filter.icon && <filter.icon className="w-4 h-4" />}
+                  <span>{filter.label}</span>
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Tickets Layout */}
-          <div className="flex-1 px-4 pb-4 min-h-0 overflow-hidden">
+          <div className="flex-1 px-4 pb-4 min-h-0">
             {/* Mobile */}
-            <div className="lg:hidden h-full">
+            <div className="lg:hidden min-h-[600px]">
               {showTicketsList ? (
-                <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full overflow-hidden">
+                <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col min-h-[600px]">
                   <h3 className="text-lg font-bold p-4 border-b border-white/10 flex-shrink-0">Tickets</h3>
                   <div className="flex-1 overflow-y-auto p-4 space-y-2">
                     {loadingTickets ? (
                       <div className="text-center text-neutral-500 py-8">Loading...</div>
-                    ) : tickets.length === 0 ? (
+                    ) : filteredTickets.length === 0 ? (
                       <div className="text-center text-neutral-500 py-8">No tickets</div>
                     ) : (
-                      tickets.map((ticket) => (
+                      filteredTickets.map((ticket) => (
                         <button
                           key={ticket.id}
                           onClick={() => {
@@ -544,7 +605,16 @@ function AdminDashboard({ onLogout }) {
                         >
                           <div className="font-medium text-sm truncate">{ticket.title}</div>
                           <div className="text-xs text-neutral-400 mt-1">{ticket.type === 'team' ? ticket.team_name : ticket.participant_name}</div>
-                          {!ticket.resolved && <div className="text-xs text-yellow-400 mt-1">● Open</div>}
+                          <div className="flex items-center gap-2 mt-1">
+                            {ticket.resolved ? (
+                              <div className="text-xs text-green-400 flex items-center gap-1">
+                                <Archive className="w-3 h-3" />
+                                Archived
+                              </div>
+                            ) : (
+                              <div className="text-xs text-yellow-400">● Open</div>
+                            )}
+                          </div>
                         </button>
                       ))
                     )}
@@ -552,7 +622,7 @@ function AdminDashboard({ onLogout }) {
                 </div>
               ) : (
                 selectedTicket && (
-                  <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full overflow-hidden">
+                  <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col min-h-[600px]">
                     {/* Header */}
                     <div className="p-3 border-b border-white/10 flex items-center gap-2 flex-shrink-0">
                       <button onClick={() => setShowTicketsList(true)} className="text-neutral-400 hover:text-white transition-colors">
@@ -564,6 +634,27 @@ function AdminDashboard({ onLogout }) {
                           {selectedTicket.type === 'team' ? selectedTicket.team_name : selectedTicket.participant_name}
                         </p>
                       </div>
+                      <button
+                        onClick={() => handleResolveTicket(selectedTicket.id, !selectedTicket.resolved)}
+                        disabled={resolvingTicket}
+                        className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded transition-all ${
+                          selectedTicket.resolved
+                            ? 'bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 hover:bg-yellow-500/20'
+                            : 'bg-green-500/10 text-green-300 border border-green-500/20 hover:bg-green-500/20'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {selectedTicket.resolved ? (
+                          <>
+                            <XCircle className="w-3.5 h-3.5" />
+                            Reopen
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Resolve
+                          </>
+                        )}
+                      </button>
                     </div>
 
                     {/* Description */}
@@ -573,7 +664,7 @@ function AdminDashboard({ onLogout }) {
                     </div>
 
                     {/* Messages */}
-                    <div className="flex-1 overflow-y-auto bg-[#0f0f10] p-3 min-h-0">
+                    <div className="h-[400px] overflow-y-auto bg-[#0f0f10] p-3 admin-messages-scroll">
                       {ticketMessages.length === 0 ? (
                         <div className="text-center text-neutral-500 text-xs py-8">No messages yet</div>
                       ) : (
@@ -635,7 +726,7 @@ function AdminDashboard({ onLogout }) {
             </div>
 
             {/* Desktop - Fixed Height Grid */}
-            <div className="hidden lg:flex gap-4 h-full min-h-0">
+            <div className="hidden lg:flex gap-4 min-h-[700px]">
               {/* Sidebar */}
               <div className="w-56 shrink-0 bg-[#1a1a1b] border border-white/10 rounded-lg overflow-hidden">
                 <div className="bg-[#1a1a1b] border-b border-white/10 p-4">
@@ -666,15 +757,15 @@ function AdminDashboard({ onLogout }) {
               </div>
 
               {/* Tickets List */}
-              <div className="w-80 shrink-0 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col overflow-hidden min-h-0">
+              <div className="w-80 shrink-0 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col min-h-[700px]">
                 <h3 className="text-lg font-bold p-4 border-b border-white/10 flex-shrink-0">Tickets</h3>
                 <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0">
                   {loadingTickets ? (
                     <div className="text-center text-neutral-500 py-8">Loading...</div>
-                  ) : tickets.length === 0 ? (
+                  ) : filteredTickets.length === 0 ? (
                     <div className="text-center text-neutral-500 py-8">No tickets</div>
                   ) : (
-                    tickets.map((ticket) => (
+                    filteredTickets.map((ticket) => (
                       <button
                         key={ticket.id}
                         onClick={() => setSelectedTicket(ticket)}
@@ -686,7 +777,16 @@ function AdminDashboard({ onLogout }) {
                       >
                         <div className="font-medium truncate">{ticket.title}</div>
                         <div className="text-xs text-neutral-400 mt-1 truncate">{ticket.type === 'team' ? ticket.team_name : ticket.participant_name}</div>
-                        {!ticket.resolved && <div className="text-xs text-yellow-400 mt-1">● Open</div>}
+                        <div className="flex items-center gap-2 mt-1">
+                          {ticket.resolved ? (
+                            <div className="text-xs text-green-400 flex items-center gap-1">
+                              <Archive className="w-3 h-3" />
+                              Archived
+                            </div>
+                          ) : (
+                            <div className="text-xs text-yellow-400">● Open</div>
+                          )}
+                        </div>
                       </button>
                     ))
                   )}
@@ -695,11 +795,36 @@ function AdminDashboard({ onLogout }) {
 
               {/* Ticket Detail */}
               {selectedTicket ? (
-                <div className="flex-1 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col overflow-hidden min-h-0">
+                <div className="flex-1 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col min-h-[700px]">
                   {/* Header */}
                   <div className="p-4 border-b border-white/10 flex-shrink-0">
-                    <h3 className="text-lg font-bold truncate">{selectedTicket.title}</h3>
-                    <p className="text-sm text-neutral-400 truncate">{selectedTicket.type === 'team' ? selectedTicket.team_name : selectedTicket.participant_name}</p>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-bold truncate">{selectedTicket.title}</h3>
+                        <p className="text-sm text-neutral-400 truncate">{selectedTicket.type === 'team' ? selectedTicket.team_name : selectedTicket.participant_name}</p>
+                      </div>
+                      <button
+                        onClick={() => handleResolveTicket(selectedTicket.id, !selectedTicket.resolved)}
+                        disabled={resolvingTicket}
+                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                          selectedTicket.resolved
+                            ? 'bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 hover:bg-yellow-500/20'
+                            : 'bg-green-500/10 text-green-300 border border-green-500/20 hover:bg-green-500/20'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {selectedTicket.resolved ? (
+                          <>
+                            <XCircle className="w-4 h-4" />
+                            Reopen Ticket
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-4 h-4" />
+                            Mark as Resolved
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   {/* Description */}
@@ -709,7 +834,7 @@ function AdminDashboard({ onLogout }) {
                   </div>
 
                   {/* Messages - Takes remaining space */}
-                  <div className="flex-1 overflow-y-auto bg-[#0f0f10] p-4 min-h-0">
+                  <div className="h-[500px] overflow-y-auto bg-[#0f0f10] p-4 admin-messages-scroll">
                     {ticketMessages.length === 0 ? (
                       <div className="text-center text-neutral-500 py-12">No messages yet</div>
                     ) : (
@@ -840,6 +965,13 @@ function AdminDashboard({ onLogout }) {
 
         *::-webkit-scrollbar-thumb:hover {
           background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Scrolling helpers for mobile and desktop chat */
+        .admin-messages-scroll {
+          -webkit-overflow-scrolling: touch;
+          touch-action: pan-y;
+          overscroll-behavior: contain;
         }
       `}</style>
     </div>

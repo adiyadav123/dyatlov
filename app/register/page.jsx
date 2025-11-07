@@ -86,6 +86,14 @@ export default function RegisterPage() {
       setError('Please fill all member details')
       return
     }
+    
+    // Check if adding this member would exceed the maximum team size
+    const totalMembers = 1 + team.members.length + 1 // 1 for leader + current members + 1 for new member
+    if (totalMembers > 5) {
+      setError('Cannot add more members. Maximum team size is 5 members (including the leader).')
+      return
+    }
+    
     setTeam({
       ...team,
       members: [...team.members, currentMember]
@@ -336,6 +344,19 @@ export default function RegisterPage() {
     // Validate all required fields
     if (!team.teamName || !team.leaderName || !team.email || !team.password || !team.leaderClass || !team.leaderSection) {
       setError('All fields are required: Team Name, Leader Name, Email, Password, Leader Class, and Leader Section')
+      setLoading(false)
+      return
+    }
+
+    // Validate team size (leader + members = total members)
+    const totalMembers = 1 + team.members.length // 1 for leader + additional members
+    if (totalMembers < 2) {
+      setError('A team must have at least 2 members (including the leader). Please add at least 1 more member.')
+      setLoading(false)
+      return
+    }
+    if (totalMembers > 5) {
+      setError('A team cannot have more than 5 members (including the leader). Please remove some members.')
       setLoading(false)
       return
     }
@@ -828,7 +849,18 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="glass-section rounded-2xl p-5 space-y-4">
-                      <h3 className="text-neutral-200 font-medium">Add Team Members</h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-neutral-200 font-medium">Add Team Members</h3>
+                        <div className="text-xs text-neutral-400">
+                          {1 + team.members.length}/5 members
+                        </div>
+                      </div>
+                      
+                      {1 + team.members.length < 2 && (
+                        <div className="text-xs text-yellow-400 bg-yellow-500/10 p-2 rounded-lg border border-yellow-500/20">
+                          ⚠️ Add at least 1 more member (minimum 2 members including leader)
+                        </div>
+                      )}
                       
                       <div className="space-y-3">
                         <Input
@@ -873,15 +905,22 @@ export default function RegisterPage() {
                         </div>
                       </div>
 
-                      <Button type="button" onClick={addMember} className="w-full h-11 bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all">
+                      <Button 
+                        type="button" 
+                        onClick={addMember} 
+                        disabled={1 + team.members.length >= 5}
+                        className="w-full h-11 bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
                         <Plus className="w-4 h-4 mr-2" />
-                        Add Member
+                        {1 + team.members.length >= 5 ? 'Maximum Team Size Reached' : 'Add Member'}
                       </Button>
                     </div>
 
                     {team.members.length > 0 && (
                       <div className="space-y-3">
-                        <Label className="text-neutral-200">Team Members ({team.members.length})</Label>
+                        <Label className="text-neutral-200">
+                          Team Members ({team.members.length} member{team.members.length !== 1 ? 's' : ''} + 1 leader = {1 + team.members.length} total)
+                        </Label>
                         <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
                           {team.members.map((member, index) => (
                             <motion.div key={index} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="glass-item rounded-xl p-4 flex items-center justify-between">

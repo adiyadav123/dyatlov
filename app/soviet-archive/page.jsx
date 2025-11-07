@@ -17,7 +17,8 @@ export default function SovietArchivePage() {
   const [authError, setAuthError] = useState('')
   const [archiveData, setArchiveData] = useState({
     newspapers: [],
-    reports: []
+    reports: [],
+    transfers: []
   })
   
   const [showReportModal, setShowReportModal] = useState(false)
@@ -28,7 +29,7 @@ export default function SovietArchivePage() {
   const [reportAction, setReportAction] = useState(null) // 'view' or 'download'
 
   const ARCHIVE_CASE_ID = '195902'
-  const ARCHIVE_PASSWORD = 'SverdlovskOblast@prosecutoroffice1959'
+  const ARCHIVE_PASSWORD = 'sverdlovskoblastprosecutoroffice1959'
 
 
   useEffect(() => {
@@ -54,13 +55,17 @@ export default function SovietArchivePage() {
 
      
       const reports = [
-        { id: 1, title: 'Redacted Investigation Report #1', file: '/redacted_investigation_reports/1.pdf', category: 'reports', date: '1959-06-01', requiresAuth: true },
-        { id: 2, title: 'Redacted Investigation Report #2', file: '/redacted_investigation_reports/2.pdf', category: 'reports', date: '1959-06-15', requiresAuth: true },
+        { id: 1, title: 'Redacted Investigation Report', file: '/redacted_investigation_reports/1.pdf', category: 'reports', date: '1959-06-01', requiresAuth: true },
+      ]
+
+      const transfers = [
+        { id: 1, title: 'Interdepartmental Transfer Note', file: '/interdepartmental_tranfer_report/2.pdf', category: 'transfers', date: '1959-05-28', requiresAuth: true },
       ]
 
       setArchiveData({
         newspapers,
-        reports
+        reports,
+        transfers
       })
     }
 
@@ -189,7 +194,7 @@ export default function SovietArchivePage() {
     const date = new Date().toLocaleDateString('ru-RU')
     setLastVisit(date)
 
-    // Check if already authenticated in this session
+    
     const authenticated = sessionStorage.getItem('archiveAuthenticated') === 'true'
     if (authenticated) {
       setIsAuthenticated(true)
@@ -294,11 +299,12 @@ export default function SovietArchivePage() {
 
   const allItems = [
     ...archiveData.newspapers,
-    ...(isAuthenticated ? archiveData.reports : archiveData.reports.map(r => ({ ...r, locked: true })))
+    ...(isAuthenticated ? archiveData.reports : archiveData.reports.map(r => ({ ...r, locked: true }))),
+    ...(isAuthenticated ? archiveData.transfers : archiveData.transfers.map(t => ({ ...t, locked: true })))
   ]
 
   const filteredItems = allItems.filter(item => {
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory
+    const matchesCategory = selectedCategory === item.category
     const matchesSearch = searchTerm === '' || 
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.date.includes(searchTerm)
@@ -373,9 +379,9 @@ export default function SovietArchivePage() {
               
               <nav className="space-y-1 md:space-y-2 mb-4 md:mb-6">
                 {[
-                  { id: 'all', label: 'All Documents', count: allItems.length },
                   { id: 'newspapers', label: 'Newspapers (1959)', count: archiveData.newspapers.length },
-                  { id: 'reports', label: `Investigation Reports${!isAuthenticated ? ' (Locked)' : ''}`, count: archiveData.reports.length }
+                  { id: 'reports', label: `Police Documents${!isAuthenticated ? ' (Locked)' : ''}`, count: archiveData.reports.length },
+                  { id: 'transfers', label: `Transfer Notes${!isAuthenticated ? ' (Locked)' : ''}`, count: archiveData.transfers.length }
                 ].map(cat => (
                   <button
                     key={cat.id}
@@ -449,10 +455,10 @@ export default function SovietArchivePage() {
                       <div className="flex flex-col md:flex-row md:items-start md:justify-between md:gap-4 gap-3">
                         <div className="flex gap-2 md:gap-3 flex-1 min-w-0">
                           <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 bg-[#2a1f0f] flex items-center justify-center relative">
-                            {item.category === 'reports' ? (
-                              <FileText className="w-4 h-4 md:w-5 md:h-5 text-[#d4c5a9]" />
-                            ) : (
+                            {item.category === 'newspapers' ? (
                               <Newspaper className="w-4 h-4 md:w-5 md:h-5 text-[#d4c5a9]" />
+                            ) : (
+                              <FileText className="w-4 h-4 md:w-5 md:h-5 text-[#d4c5a9]" />
                             )}
                             {item.locked && (
                               <Lock className="w-2 h-2 md:w-3 md:h-3 text-red-500 absolute -bottom-1 -right-1 bg-white rounded-full p-0.5" />
@@ -483,7 +489,7 @@ export default function SovietArchivePage() {
 
                         {!item.locked && (
                           <div className="flex gap-1 md:gap-2 shrink-0 w-full md:w-auto">
-                            {item.category === 'reports' ? (
+                            {item.category === 'reports' || item.category === 'transfers' ? (
                               <>
                                 <button
                                   onClick={(e) => handleReportClick(item, 'view')}

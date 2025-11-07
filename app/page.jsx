@@ -574,13 +574,25 @@ export default function ComingSoonPage() {
                     </p>
                     <p className="text-white">Shubhankar M. Panth</p>
                   </div>
-                  <div className="flex items-center justify-center flex-col">
+
+                  <div>
                     <p className="text-amber-400 font-semibold text-lg mb-2">
                       Voices & Dialogues
                     </p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-white">Smriti Ma'am</p>
-                      <p className="text-white pl-2"> Tirthankar Sir</p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {[
+                        "Manish Sir",
+                        "Shikha Ma'am",
+                        "Smriti Ma'am",
+                        "Tirthankar Sir",
+                      ].map((name, i) => (
+                        <span
+                          key={i}
+                          className="px-3 py-1 bg-stone-900/30 border border-stone-800/50 rounded-full text-stone-200"
+                        >
+                          {name}
+                        </span>
+                      ))}
                     </div>
                   </div>
 

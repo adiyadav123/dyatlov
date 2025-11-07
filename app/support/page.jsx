@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Ticket, Send, Plus, MessageCircle, Menu, X } from 'lucide-react'
+import { Ticket, Send, Plus, MessageCircle, Menu, X, Archive } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -31,6 +31,7 @@ export default function SupportPage() {
   const [fetchError, setFetchError] = useState('')
   const [notificationPermission, setNotificationPermission] = useState(null)
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false)
+  const [ticketFilter, setTicketFilter] = useState('open') // 'open', 'archived', 'all'
 
   useEffect(() => {
     const pType = localStorage.getItem('participantType')
@@ -332,8 +333,15 @@ export default function SupportPage() {
     )
   }
 
+  // Filter tickets based on selected filter
+  const filteredTickets = tickets.filter(ticket => {
+    if (ticketFilter === 'open') return !ticket.resolved
+    if (ticketFilter === 'archived') return ticket.resolved
+    return true // 'all'
+  })
+
   return (
-    <div className="h-screen bg-[#0a0a0a] text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <header className="sticky top-0 z-50 bg-[#1a1a1b]/95 backdrop-blur-md border-b border-white/10 shrink-0">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -355,7 +363,7 @@ export default function SupportPage() {
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden px-4 py-4 sm:py-6 flex flex-col min-h-0">
+      <div className="flex-1 px-4 py-4 sm:py-6 flex flex-col min-h-0">
         {/* Notification Permission Prompt */}
         {showNotificationPrompt && notificationPermission === 'default' && (
           <motion.div
@@ -388,7 +396,7 @@ export default function SupportPage() {
           </motion.div>
         )}
 
-        <div className="flex-1 flex gap-4 lg:gap-6 relative overflow-hidden min-h-0">
+        <div className="flex-1 flex gap-4 lg:gap-6 relative min-h-0">
           
           <AnimatePresence>
             {(showSidebar || window.innerWidth >= 1024) && (
@@ -415,14 +423,37 @@ export default function SupportPage() {
                     </button>
                   </div>
 
+                  {/* Filter Tabs */}
+                  <div className="px-2 pb-2 border-b border-white/10">
+                    <div className="bg-[#0f0f10] rounded-lg flex overflow-hidden">
+                      {[
+                        { id: 'open', label: 'Open', icon: Ticket },
+                        { id: 'archived', label: 'Archived', icon: Archive }
+                      ].map((filter) => (
+                        <button
+                          key={filter.id}
+                          onClick={() => setTicketFilter(filter.id)}
+                          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors ${
+                            ticketFilter === filter.id
+                              ? 'bg-blue-500/20 text-blue-300'
+                              : 'text-neutral-400 hover:bg-white/5'
+                          }`}
+                        >
+                          <filter.icon className="w-3.5 h-3.5" />
+                          <span>{filter.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="space-y-1 p-2 overflow-y-auto flex-1 min-h-0">
-                    {tickets.length === 0 ? (
+                    {filteredTickets.length === 0 ? (
                       <div className="text-center py-8 text-neutral-500 text-sm">
                         <Ticket className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                        <p>No tickets yet</p>
+                        <p>No {ticketFilter} tickets</p>
                       </div>
                     ) : (
-                      tickets.map((ticket) => (
+                      filteredTickets.map((ticket) => (
                         <button
                           key={ticket.id}
                           onClick={() => handleSelectTicket(ticket)}
@@ -436,9 +467,16 @@ export default function SupportPage() {
                           <div className="text-xs text-neutral-500 mt-1">
                             {new Date(ticket.created_at).toLocaleDateString()}
                           </div>
-                          {!ticket.resolved && (
-                            <div className="text-xs text-yellow-400 mt-1">Open</div>
-                          )}
+                          <div className="flex items-center gap-2 mt-1">
+                            {ticket.resolved ? (
+                              <div className="text-xs text-green-400 flex items-center gap-1">
+                                <Archive className="w-3 h-3" />
+                                Archived
+                              </div>
+                            ) : (
+                              <div className="text-xs text-yellow-400">● Open</div>
+                            )}
+                          </div>
                         </button>
                       ))
                     )}
@@ -520,7 +558,7 @@ export default function SupportPage() {
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-[#1a1a1b] border border-white/10 rounded-lg overflow-hidden flex flex-col flex-1 min-w-0 min-h-0"
+                className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col flex-1 min-w-0 min-h-[600px]"
               >
                 <div className="shrink-0 p-4 sm:p-6 border-b border-white/10 bg-gradient-to-r from-blue-950/20 to-transparent">
                   <h2 className="text-base sm:text-xl font-bold line-clamp-2">{selectedTicket.title}</h2>
@@ -533,7 +571,7 @@ export default function SupportPage() {
                 </div>
 
                 <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                  <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 flex flex-col min-h-0 support-scroll">
+                  <div className="h-[500px] overflow-y-auto p-4 sm:p-6 space-y-3 support-scroll">
                     {/* Initial Issue */}
                     <div className="flex justify-start mb-4">
                       <div className="bg-amber-600 text-white px-4 py-2 rounded-2xl rounded-tl-none text-sm max-w-[85%] sm:max-w-[75%] shadow-lg">
