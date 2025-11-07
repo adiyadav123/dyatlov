@@ -34,13 +34,23 @@ export default function SovietArchivePage() {
   // Load archive data on mount
   useEffect(() => {
     const loadArchiveData = () => {
-      // Newspapers: 1-5 from /public/newspapers
+      // Newspapers: 1-5 from /public/newspapers (PNG files) + 1-10 (JPG files)
       const newspapers = [
         { id: 1, title: 'Soviet News Report - 1959', file: '/newspapers/1.png', category: 'newspapers', date: '1959-01-15' },
         { id: 2, title: 'Soviet News Report - 1959', file: '/newspapers/2.png', category: 'newspapers', date: '1959-02-20' },
         { id: 3, title: 'Soviet News Report - 1959', file: '/newspapers/3.png', category: 'newspapers', date: '1959-03-10' },
         { id: 4, title: 'Soviet News Report - 1959', file: '/newspapers/4.png', category: 'newspapers', date: '1959-04-05' },
         { id: 5, title: 'Soviet News Report - 1959', file: '/newspapers/5.png', category: 'newspapers', date: '1959-05-12' },
+        { id: 6, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (1).jpg', category: 'newspapers', date: '1959-06-01' },
+        { id: 7, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (2).jpg', category: 'newspapers', date: '1959-06-15' },
+        { id: 8, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (3).jpg', category: 'newspapers', date: '1959-07-10' },
+        { id: 9, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (4).jpg', category: 'newspapers', date: '1959-07-25' },
+        { id: 10, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (5).jpg', category: 'newspapers', date: '1959-08-05' },
+        { id: 11, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (6).jpg', category: 'newspapers', date: '1959-08-20' },
+        { id: 12, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (7).jpg', category: 'newspapers', date: '1959-09-10' },
+        { id: 13, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (8).jpg', category: 'newspapers', date: '1959-09-25' },
+        { id: 14, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (9).jpg', category: 'newspapers', date: '1959-10-15' },
+        { id: 15, title: 'Soviet News Report - 1959', file: '/newspapers/Newspaper (10).jpg', category: 'newspapers', date: '1959-11-01' },
       ]
 
       // Investigation Reports: 1-2 from /public/redacted_investigation_reports (requires auth)

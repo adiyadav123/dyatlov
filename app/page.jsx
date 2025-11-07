@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 const DEFAULT_TRANSITIONS = {
@@ -9,6 +10,7 @@ const DEFAULT_TRANSITIONS = {
 };
 
 export default function ComingSoonPage() {
+  const router = useRouter();
   const [timeRemaining, setTimeRemaining] = useState({
     hours: 0,
     minutes: 0,
@@ -29,6 +31,7 @@ export default function ComingSoonPage() {
   const y2 = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+
 
   useEffect(() => {
     setMounted(true);
@@ -117,6 +120,13 @@ export default function ComingSoonPage() {
         });
       }
     }, 1000);
+
+    const participantId = localStorage.getItem('participantEmail');
+    
+    if (participantId) {
+      console.log('[Home] User already logged in, redirecting to /start');
+      router.push('/start');
+    }
 
     return () => {
       clearInterval(timer);
