@@ -781,7 +781,7 @@ export default function StartPage() {
                       </span>
                     </button>
                   )}
-                  {progressData?.visitedPages.includes('evidence-archive') && (
+                  {progressData?.visitedPages.includes('evidence') && (
                     <button
                       onClick={() => router.push("/soviet-archive/evidence")}
                       className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-400 hover:bg-white/5 hover:text-white border border-transparent transition-all"

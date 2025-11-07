@@ -6,6 +6,7 @@ const PROTECTED_ROUTES = [
   '/newspaper-1959',
   '/voices-1959',
   '/soviet-archive',
+  '/soviet-archive/evidence',
   '/leaderboard',
   '/admin',
   '/support',

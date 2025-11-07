@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS user_progress (
   id BIGSERIAL PRIMARY KEY,
   participant_id UUID NOT NULL,
   participant_type VARCHAR(20) NOT NULL CHECK (participant_type IN ('individual', 'team')),
-  page_visited VARCHAR(50) NOT NULL CHECK (page_visited IN ('newspaper-1959', 'voices-1959', 'soviet-archive')),
+  page_visited VARCHAR(50) NOT NULL CHECK (page_visited IN ('newspaper-1959', 'voices-1959', 'soviet-archive', 'evidence')),
   visited_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   
