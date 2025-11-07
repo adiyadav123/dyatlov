@@ -29,7 +29,7 @@ export default function SovietArchivePage() {
 
   // Archive access credentials
   const ARCHIVE_CASE_ID = '195902'
-  const ARCHIVE_PASSWORD = 'sverdlovskoblastprosecutoroffice1959'
+  const ARCHIVE_PASSWORD = 'SverdlovskOblast@prosecutoroffice1959'
 
   // Load archive data on mount
   useEffect(() => {
