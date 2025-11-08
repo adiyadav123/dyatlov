@@ -211,6 +211,7 @@ function AdminDashboard({ onLogout }) {
   const [ticketFilter, setTicketFilter] = useState("open"); // 'all', 'open', 'archived'
   const [resolvingTicket, setResolvingTicket] = useState(false);
   const [seenMessages, setSeenMessages] = useState({}); // Track seen message IDs
+  const [lastSeenTimestamp, setLastSeenTimestamp] = useState({}); // Track last seen message time per ticket
 
   useEffect(() => {
     if (activeTab === "tickets") {
@@ -252,14 +253,22 @@ function AdminDashboard({ onLogout }) {
       const messages = Array.isArray(data) ? data : [];
       setTicketMessages(sortMessagesByTime(messages));
       
-      // Check if there are any new user messages (not from admin)
-      const hasUserMessages = messages.some((msg) => msg.sender_type !== "admin");
-      if (hasUserMessages && !seenMessages[ticketId]) {
-        // Mark as unseen if there are user messages and we haven't seen them yet
-        setSeenMessages((prev) => ({
-          ...prev,
-          [ticketId]: false,
-        }));
+      // Check if there are any NEW user messages (not from admin) after the last seen timestamp
+      const lastSeen = lastSeenTimestamp[ticketId];
+      const userMessages = messages.filter((msg) => msg.sender_type !== "admin");
+      
+      if (userMessages.length > 0) {
+        const latestUserMessage = userMessages[userMessages.length - 1];
+        let messageTime = new Date(latestUserMessage.created_at).getTime();
+        
+        // If this is the first time viewing, or if there's a newer message than last seen
+        if (!lastSeen || messageTime > lastSeen) {
+          // Mark as unseen - there are new user messages
+          setSeenMessages((prev) => ({
+            ...prev,
+            [ticketId]: false,
+          }));
+        }
       }
     } catch (err) {
       console.error("Error fetching messages:", err);
@@ -300,6 +309,12 @@ function AdminDashboard({ onLogout }) {
     setSeenMessages((prev) => ({
       ...prev,
       [ticketId]: true,
+    }));
+    
+    // Update the last seen timestamp to current time
+    setLastSeenTimestamp((prev) => ({
+      ...prev,
+      [ticketId]: new Date().getTime(),
     }));
   };
 

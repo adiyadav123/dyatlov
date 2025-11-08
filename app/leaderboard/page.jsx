@@ -59,7 +59,12 @@ export default function LeaderboardPage() {
             discovered_at
           ),
           team_members (
-            id
+            id,
+            member_name,
+            class,
+            section,
+            is_leader,
+            created_at
           )
         `)
 
@@ -105,6 +110,51 @@ export default function LeaderboardPage() {
         }
       }
 
+      // Helper function to fetch progress data from user_progress table
+      const fetchUserProgress = async (participantId, participantType) => {
+        try {
+          const { data, error } = await supabase
+            .from('user_progress')
+            .select('page_visited, visited_at, created_at')
+            .eq('participant_id', participantId)
+            .eq('participant_type', participantType)
+            .order('visited_at', { ascending: true })
+
+          if (error) throw error
+
+          if (!data || data.length === 0) {
+            return {
+              pagesVisited: 0,
+              firstVisitTime: null,
+              lastVisitTime: null,
+              totalTimeMs: 0,
+              pages: []
+            }
+          }
+
+          const firstVisitTime = new Date(data[0].created_at).getTime()
+          const lastVisitTime = new Date(data[data.length - 1].visited_at).getTime()
+          const totalTimeMs = lastVisitTime - firstVisitTime
+
+          return {
+            pagesVisited: data.length,
+            firstVisitTime: new Date(data[0].created_at),
+            lastVisitTime: new Date(data[data.length - 1].visited_at),
+            totalTimeMs,
+            pages: data.map(d => d.page_visited)
+          }
+        } catch (err) {
+          console.error('[Leaderboard] Error fetching user progress:', err)
+          return {
+            pagesVisited: 0,
+            firstVisitTime: null,
+            lastVisitTime: null,
+            totalTimeMs: 0,
+            pages: []
+          }
+        }
+      }
+
       // Helper function to fetch progress count for a participant
       const fetchProgressCount = async (participantId, participantType) => {
         try {
@@ -123,40 +173,89 @@ export default function LeaderboardPage() {
       }
 
       const processedIndividuals = await Promise.all(
-        (individuals || []).map(async (ind) => ({
-          id: ind.id,
-          type: 'individual',
-          name: ind.name,
-          details: `Class ${ind.class}-${ind.section}`,
-          sitesDiscovered: await fetchProgressCount(ind.id, 'individual'),
-          registeredAt: new Date(ind.created_at),
-          lastDiscovery: ind.site_discoveries?.length > 0 
-            ? new Date(Math.max(...ind.site_discoveries.map(d => new Date(d.discovered_at))))
-            : null,
-          timeSpent: calculateTimeSpent(ind.created_at),
-          memberCount: 1,
-          createdAtRaw: ind.created_at
-        }))
+        (individuals || []).map(async (ind) => {
+          const progressData = await fetchUserProgress(ind.id, 'individual')
+          
+          return {
+            id: ind.id,
+            type: 'individual',
+            name: ind.name,
+            details: `Class ${ind.class}-${ind.section}`,
+            sitesDiscovered: progressData.pagesVisited,
+            registeredAt: new Date(ind.created_at),
+            firstVisitTime: progressData.firstVisitTime,
+            lastVisitTime: progressData.lastVisitTime,
+            totalTimeMs: progressData.totalTimeMs,
+            pagesVisited: progressData.pages,
+            discoveryTimes: progressData.pagesVisited > 0 
+              ? [progressData.firstVisitTime.getTime(), ...(progressData.pages.length > 1 ? [progressData.lastVisitTime.getTime()] : [])]
+              : [],
+            timeSpent: calculateTimeSpent(ind.created_at),
+            memberCount: 1,
+            createdAtRaw: ind.created_at
+          }
+        })
       )
 
       const processedTeams = await Promise.all(
-        (teams || []).map(async (team) => ({
-          id: team.id,
-          type: 'team',
-          name: team.team_name,
-          details: `Leader: ${team.team_leader_name}`,
-          sitesDiscovered: await fetchProgressCount(team.id, 'team'),
-          registeredAt: new Date(team.created_at),
-          lastDiscovery: team.site_discoveries?.length > 0
-            ? new Date(Math.max(...team.site_discoveries.map(d => new Date(d.discovered_at))))
-            : null,
-          timeSpent: calculateTimeSpent(team.created_at),
-          memberCount: team.team_members?.length || 0,
-          createdAtRaw: team.created_at
-        }))
+        (teams || []).map(async (team) => {
+          const progressData = await fetchUserProgress(team.id, 'team')
+          
+          // Get earliest team member's created_at for ranking (when team was actually formed)
+          let earliestMemberCreatedAt = null
+          if (team.team_members && team.team_members.length > 0) {
+            const memberDates = team.team_members
+              .filter(tm => tm.created_at)
+              .map(tm => new Date(tm.created_at).getTime())
+            
+            if (memberDates.length > 0) {
+              earliestMemberCreatedAt = new Date(Math.min(...memberDates))
+            }
+          }
+          
+          // Use earliest member's created_at or team's created_at as registration time
+          const registrationTime = earliestMemberCreatedAt || new Date(team.created_at)
+          
+          return {
+            id: team.id,
+            type: 'team',
+            name: team.team_name,
+            details: `Leader: ${team.team_leader_name}`,
+            sitesDiscovered: progressData.pagesVisited,
+            registeredAt: registrationTime,
+            firstVisitTime: progressData.firstVisitTime,
+            lastVisitTime: progressData.lastVisitTime,
+            totalTimeMs: progressData.totalTimeMs,
+            pagesVisited: progressData.pages,
+            discoveryTimes: progressData.pagesVisited > 0 
+              ? [progressData.firstVisitTime.getTime(), ...(progressData.pages.length > 1 ? [progressData.lastVisitTime.getTime()] : [])]
+              : [],
+            timeSpent: calculateTimeSpent(registrationTime.toISOString()),
+            memberCount: team.team_members?.length || 0,
+            createdAtRaw: registrationTime.toISOString()
+          }
+        })
       )
 
-      const combined = [...processedIndividuals, ...processedTeams]
+      // After fetching sitesDiscovered we can compute when the user/team achieved that count
+      const fillAchievedAt = (arr) => arr.map((entry) => {
+        const count = entry.sitesDiscovered || 0
+        const times = entry.discoveryTimes || []
+        if (count > 0 && times.length >= count) {
+          // The time when they achieved their current count is the timestamp of the count-th discovery (1-based)
+          entry.achievedAt = new Date(times[count - 1])
+          entry.achievedAtMs = times[count - 1]
+        } else {
+          entry.achievedAt = null
+          entry.achievedAtMs = Infinity
+        }
+        return entry
+      })
+
+      const combined = [
+        ...processedIndividuals,
+        ...processedTeams
+      ]
       
       console.log('[Leaderboard] Combined data:', { 
         individualsCount: processedIndividuals.length, 
@@ -164,19 +263,84 @@ export default function LeaderboardPage() {
         totalCount: combined.length 
       })
       
-      combined.sort((a, b) => {
-        if (b.sitesDiscovered !== a.sitesDiscovered) {
-          return b.sitesDiscovered - a.sitesDiscovered
-        }
-        return a.registeredAt - b.registeredAt
-      })
+      // Prepare data for ranking - using user_progress data
+      const participantsForRanking = combined.map(p => ({
+        name: p.name,
+        type: p.type,
+        sitesDiscovered: p.sitesDiscovered,
+        firstDiscoveryTime: p.firstVisitTime,
+        latestDiscoveryTime: p.lastVisitTime,
+        registeredAt: p.registeredAt,
+        totalTimeMs: p.totalTimeMs,
+        timeSpent: p.timeSpent,
+        id: p.id,
+        details: p.details,
+        memberCount: p.memberCount,
+        createdAtRaw: p.createdAtRaw
+      }))
 
-      console.log('[Leaderboard] Final sorted data:', combined)
-      setLeaderboardData(combined)
-      setLoading(false)
+      console.log('[Leaderboard] Participants for ranking:', participantsForRanking.length, participantsForRanking)
+
+      try {
+        // Call ranking API for intelligent ranking
+        const rankingResponse = await fetch('/api/leaderboard/rank', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ participants: participantsForRanking })
+        })
+
+        console.log('[Leaderboard] Ranking API response status:', rankingResponse.status, rankingResponse.statusText)
+
+        if (!rankingResponse.ok) {
+          const errorText = await rankingResponse.text()
+          console.error('[Leaderboard] Ranking API error response:', errorText)
+          throw new Error(`Failed to get rankings: ${rankingResponse.statusText}`)
+        }
+
+        const rankingData = await rankingResponse.json()
+        
+        console.log('[Leaderboard] Ranking API response:', rankingData)
+        
+        // Map rankings back to full participant objects
+        const rankedParticipants = rankingData.rankings
+          .map(ranking => {
+            const original = combined.find(p => p.name === ranking.name && p.type === ranking.type)
+            if (!original) {
+              console.warn('[Leaderboard] Could not find original participant for ranking:', ranking)
+              return null
+            }
+            return {
+              ...original,
+              aiRank: ranking.rank,
+              rankReason: ranking.reason
+            }
+          })
+          .filter(Boolean) // Remove nulls
+
+        // Sort by AI rank
+        rankedParticipants.sort((a, b) => (a.aiRank || 999) - (b.aiRank || 999))
+
+        console.log('[Leaderboard] AI-ranked data:', rankedParticipants)
+        setLeaderboardData(rankedParticipants)
+        setLoading(false)
+      } catch (err) {
+        console.error('[Leaderboard] Error getting AI rankings, falling back to default sort:', err)
+        // Fallback: sort by sites discovered desc, then first discovery time asc
+        combined.sort((a, b) => {
+          if ((b.sitesDiscovered || 0) !== (a.sitesDiscovered || 0)) {
+            return (b.sitesDiscovered || 0) - (a.sitesDiscovered || 0)
+          }
+          const aTime = a.discoveryTimes?.[0] ?? Infinity
+          const bTime = b.discoveryTimes?.[0] ?? Infinity
+          return aTime - bTime
+        })
+        setLeaderboardData(combined)
+        setLoading(false)
+      }
 
     } catch (err) {
-      console.error('[Leaderboard] Error fetching leaderboard:', err)
+      console.error('[Leaderboard] Error fetching leaderboard:', err?.message || err)
+      console.error('[Leaderboard] Full error:', JSON.stringify(err, null, 2))
       setLeaderboardData([])
       setLoading(false)
     }
@@ -399,7 +563,7 @@ export default function LeaderboardPage() {
               </thead>
               <tbody>
                 {leaderboardData.map((entry, index) => {
-                  const rank = index + 1
+                  const rank = entry.aiRank || (index + 1)
                   const isCurrentUser = currentUser && 
                     ((currentUser.type === 'team' && entry.type === 'team' && entry.id === currentUser.id) ||
                      (currentUser.type === 'individual' && entry.type === 'individual' && entry.id === currentUser.id))
