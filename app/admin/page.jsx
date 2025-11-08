@@ -1,51 +1,64 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Lock, Send, Ticket, Bell, LogOut, Eye, EyeOff, ArrowLeft, Sparkles, Archive, CheckCircle2, XCircle } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useState, useEffect } from "react";
+import {
+  Lock,
+  Send,
+  Ticket,
+  Bell,
+  LogOut,
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  Sparkles,
+  Archive,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [loginError, setLoginError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const ADMIN_EMAIL = 'jaipuriacomputerclub@gmail.com'
-  const ADMIN_PASSWORD = 'admin@site'
+  const ADMIN_EMAIL = "jaipuriacomputerclub@gmail.com";
+  const ADMIN_PASSWORD = "admin@site";
 
   useEffect(() => {
-    const adminAuth = localStorage.getItem('adminAuth')
-    if (adminAuth === 'true') {
-      setIsAuthenticated(true)
+    const adminAuth = localStorage.getItem("adminAuth");
+    if (adminAuth === "true") {
+      setIsAuthenticated(true);
     }
-  }, [])
+  }, []);
 
   const handleLogin = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setLoginError('')
+    e.preventDefault();
+    setLoading(true);
+    setLoginError("");
 
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('adminAuth', 'true')
+      setIsAuthenticated(true);
+      localStorage.setItem("adminAuth", "true");
     } else {
-      setLoginError('Invalid email or password')
+      setLoginError("Invalid email or password");
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleLogout = () => {
-    setIsAuthenticated(false)
-    localStorage.removeItem('adminAuth')
-    setEmail('')
-    setPassword('')
-  }
+    setIsAuthenticated(false);
+    localStorage.removeItem("adminAuth");
+    setEmail("");
+    setPassword("");
+  };
 
   if (!isAuthenticated) {
     return (
@@ -68,7 +81,9 @@ export default function AdminPage() {
 
               <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
                 <div className="space-y-2">
-                  <Label className="text-neutral-300 text-sm font-medium">Email</Label>
+                  <Label className="text-neutral-300 text-sm font-medium">
+                    Email
+                  </Label>
                   <Input
                     type="email"
                     placeholder="Enter admin email"
@@ -80,10 +95,12 @@ export default function AdminPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-neutral-300 text-sm font-medium">Password</Label>
+                  <Label className="text-neutral-300 text-sm font-medium">
+                    Password
+                  </Label>
                   <div className="relative">
                     <Input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="Enter admin password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -95,7 +112,11 @@ export default function AdminPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -115,7 +136,7 @@ export default function AdminPage() {
                   disabled={loading}
                   className="w-full h-11 glass-button font-medium"
                 >
-                  {loading ? 'Authenticating...' : 'Access Dashboard'}
+                  {loading ? "Authenticating..." : "Access Dashboard"}
                 </Button>
               </form>
 
@@ -165,241 +186,293 @@ export default function AdminPage() {
           }
         `}</style>
       </div>
-    )
+    );
   }
 
-  return <AdminDashboard onLogout={handleLogout} />
+  return <AdminDashboard onLogout={handleLogout} />;
 }
 
 function AdminDashboard({ onLogout }) {
-  const [activeTab, setActiveTab] = useState('notifications')
-  const [notificationTitle, setNotificationTitle] = useState('')
-  const [notificationMessage, setNotificationMessage] = useState('')
-  const [sendingNotification, setSendingNotification] = useState(false)
-  const [notificationSuccess, setNotificationSuccess] = useState('')
-  const [notificationError, setNotificationError] = useState('')
-  const [enhancingNotification, setEnhancingNotification] = useState(false)
-  const [enhancingReply, setEnhancingReply] = useState(false)
-  const [tickets, setTickets] = useState([])
-  const [selectedTicket, setSelectedTicket] = useState(null)
-  const [ticketMessages, setTicketMessages] = useState([])
-  const [replyMessage, setReplyMessage] = useState('')
-  const [replyError, setReplyError] = useState('')
-  const [loadingTickets, setLoadingTickets] = useState(true)
-  const [showTicketsList, setShowTicketsList] = useState(true)
-  const [ticketFilter, setTicketFilter] = useState('open') // 'all', 'open', 'archived'
-  const [resolvingTicket, setResolvingTicket] = useState(false)
+  const [activeTab, setActiveTab] = useState("notifications");
+  const [notificationTitle, setNotificationTitle] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [sendingNotification, setSendingNotification] = useState(false);
+  const [notificationSuccess, setNotificationSuccess] = useState("");
+  const [notificationError, setNotificationError] = useState("");
+  const [enhancingNotification, setEnhancingNotification] = useState(false);
+  const [enhancingReply, setEnhancingReply] = useState(false);
+  const [tickets, setTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [ticketMessages, setTicketMessages] = useState([]);
+  const [replyMessage, setReplyMessage] = useState("");
+  const [replyError, setReplyError] = useState("");
+  const [loadingTickets, setLoadingTickets] = useState(true);
+  const [showTicketsList, setShowTicketsList] = useState(true);
+  const [ticketFilter, setTicketFilter] = useState("open"); // 'all', 'open', 'archived'
+  const [resolvingTicket, setResolvingTicket] = useState(false);
+  const [seenMessages, setSeenMessages] = useState({}); // Track seen message IDs
 
   useEffect(() => {
-    if (activeTab === 'tickets') {
-      fetchTickets()
+    if (activeTab === "tickets") {
+      fetchTickets();
     }
-  }, [activeTab])
+  }, [activeTab]);
 
   useEffect(() => {
     if (selectedTicket) {
-      fetchTicketMessages(selectedTicket.id)
+      fetchTicketMessages(selectedTicket.id);
+      // Mark all messages as seen when viewing a ticket
+      markMessagesAsSeen(selectedTicket.id);
       const messageInterval = setInterval(() => {
-        fetchTicketMessages(selectedTicket.id)
-      }, 3000)
-      return () => clearInterval(messageInterval)
+        fetchTicketMessages(selectedTicket.id);
+      }, 3000);
+      return () => clearInterval(messageInterval);
     }
-  }, [selectedTicket])
+  }, [selectedTicket]);
 
   const fetchTickets = async () => {
     try {
-      const response = await fetch('/api/admin/tickets')
-      if (!response.ok) throw new Error('Failed to fetch')
-      const data = await response.json()
-      setTickets(data.tickets || [])
+      const response = await fetch("/api/admin/tickets");
+      if (!response.ok) throw new Error("Failed to fetch");
+      const data = await response.json();
+      setTickets(data.tickets || []);
     } catch (err) {
-      console.error('Error fetching tickets:', err)
+      console.error("Error fetching tickets:", err);
     } finally {
-      setLoadingTickets(false)
+      setLoadingTickets(false);
     }
-  }
+  };
 
   const fetchTicketMessages = async (ticketId) => {
     try {
-      const response = await fetch(`/api/admin/tickets/messages?ticketId=${ticketId}`)
-      const data = await response.json()
-      const messages = Array.isArray(data) ? data : []
-      setTicketMessages(sortMessagesByTime(messages))
+      const response = await fetch(
+        `/api/admin/tickets/messages?ticketId=${ticketId}`
+      );
+      const data = await response.json();
+      const messages = Array.isArray(data) ? data : [];
+      setTicketMessages(sortMessagesByTime(messages));
+      
+      // Check if there are any new user messages (not from admin)
+      const hasUserMessages = messages.some((msg) => msg.sender_type !== "admin");
+      if (hasUserMessages && !seenMessages[ticketId]) {
+        // Mark as unseen if there are user messages and we haven't seen them yet
+        setSeenMessages((prev) => ({
+          ...prev,
+          [ticketId]: false,
+        }));
+      }
     } catch (err) {
-      console.error('Error fetching messages:', err)
-      setTicketMessages([])
+      console.error("Error fetching messages:", err);
+      setTicketMessages([]);
     }
-  }
+  };
 
   const sortMessagesByTime = (msgs) => {
     return [...msgs].sort((a, b) => {
       try {
-        let timeA = a.created_at
-        let timeB = b.created_at
-        if (typeof timeA === 'string' && !timeA.endsWith('Z') && !timeA.includes('+')) timeA += 'Z'
-        if (typeof timeB === 'string' && !timeB.endsWith('Z') && !timeB.includes('+')) timeB += 'Z'
-        const dateA = new Date(timeA).getTime()
-        const dateB = new Date(timeB).getTime()
-        if (isNaN(dateA)) return 1
-        if (isNaN(dateB)) return -1
-        return dateA - dateB
+        let timeA = a.created_at;
+        let timeB = b.created_at;
+        if (
+          typeof timeA === "string" &&
+          !timeA.endsWith("Z") &&
+          !timeA.includes("+")
+        )
+          timeA += "Z";
+        if (
+          typeof timeB === "string" &&
+          !timeB.endsWith("Z") &&
+          !timeB.includes("+")
+        )
+          timeB += "Z";
+        const dateA = new Date(timeA).getTime();
+        const dateB = new Date(timeB).getTime();
+        if (isNaN(dateA)) return 1;
+        if (isNaN(dateB)) return -1;
+        return dateA - dateB;
       } catch {
-        return 0
+        return 0;
       }
-    })
-  }
+    });
+  };
+
+  const markMessagesAsSeen = (ticketId) => {
+    // Mark all messages from this ticket as seen
+    setSeenMessages((prev) => ({
+      ...prev,
+      [ticketId]: true,
+    }));
+  };
+
+  const getUnseenMessageCount = (ticketId) => {
+    // Returns true if ticket has unseen messages
+    return !seenMessages[ticketId];
+  };
 
   const formatTime = (dateString) => {
     try {
-      let normalized = dateString
-      if (typeof dateString === 'string' && !dateString.endsWith('Z') && !dateString.includes('+')) {
-        normalized += 'Z'
+      let normalized = dateString;
+      if (
+        typeof dateString === "string" &&
+        !dateString.endsWith("Z") &&
+        !dateString.includes("+")
+      ) {
+        normalized += "Z";
       }
-      const date = new Date(normalized)
-      if (isNaN(date.getTime())) return 'Invalid'
-      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+      const date = new Date(normalized);
+      if (isNaN(date.getTime())) return "Invalid";
+      return date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
     } catch {
-      return 'Error'
+      return "Error";
     }
-  }
+  };
 
   const handleSendNotification = async (e) => {
-    e.preventDefault()
-    setSendingNotification(true)
-    setNotificationError('')
-    setNotificationSuccess('')
+    e.preventDefault();
+    setSendingNotification(true);
+    setNotificationError("");
+    setNotificationSuccess("");
 
     try {
-      const response = await fetch('/api/admin/notifications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: notificationTitle, message: notificationMessage })
-      })
+      const response = await fetch("/api/admin/notifications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: notificationTitle,
+          message: notificationMessage,
+        }),
+      });
 
-      if (!response.ok) throw new Error('Failed to send')
-      setNotificationSuccess('Notification sent!')
-      setNotificationTitle('')
-      setNotificationMessage('')
-      setTimeout(() => setNotificationSuccess(''), 3000)
+      if (!response.ok) throw new Error("Failed to send");
+      setNotificationSuccess("Notification sent!");
+      setNotificationTitle("");
+      setNotificationMessage("");
+      setTimeout(() => setNotificationSuccess(""), 3000);
     } catch (err) {
-      setNotificationError('Failed to send notification')
+      setNotificationError("Failed to send notification");
     } finally {
-      setSendingNotification(false)
+      setSendingNotification(false);
     }
-  }
+  };
 
   const handleReplyToTicket = async (e) => {
-    e.preventDefault()
-    setReplyError('')
+    e.preventDefault();
+    setReplyError("");
 
     try {
-      const response = await fetch('/api/admin/tickets/reply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketId: selectedTicket.id, message: replyMessage })
-      })
+      const response = await fetch("/api/admin/tickets/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ticketId: selectedTicket.id,
+          message: replyMessage,
+        }),
+      });
 
-      if (!response.ok) throw new Error('Failed')
-      setReplyMessage('')
-      fetchTickets()
-      if (selectedTicket?.id) fetchTicketMessages(selectedTicket.id)
+      if (!response.ok) throw new Error("Failed");
+      setReplyMessage("");
+      fetchTickets();
+      if (selectedTicket?.id) fetchTicketMessages(selectedTicket.id);
     } catch (err) {
-      setReplyError('Failed to send reply')
+      setReplyError("Failed to send reply");
     }
-  }
+  };
 
   const handleEnhanceNotification = async () => {
-    if (!notificationMessage.trim()) return
-    
-    setEnhancingNotification(true)
-    setNotificationError('')
-    
-    try {
-      const response = await fetch('/api/enhance-text', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: notificationMessage })
-      })
+    if (!notificationMessage.trim()) return;
 
-      if (!response.ok) throw new Error('Failed to enhance')
-      
-      const data = await response.json()
+    setEnhancingNotification(true);
+    setNotificationError("");
+
+    try {
+      const response = await fetch("/api/enhance-text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: notificationMessage }),
+      });
+
+      if (!response.ok) throw new Error("Failed to enhance");
+
+      const data = await response.json();
       if (data.enhanced) {
-        setNotificationMessage(data.enhanced)
+        setNotificationMessage(data.enhanced);
       } else {
-        throw new Error('No enhanced text received')
+        throw new Error("No enhanced text received");
       }
     } catch (err) {
-      setNotificationError('Failed to enhance message. Please try again.')
-      setTimeout(() => setNotificationError(''), 3000)
+      setNotificationError("Failed to enhance message. Please try again.");
+      setTimeout(() => setNotificationError(""), 3000);
     } finally {
-      setEnhancingNotification(false)
+      setEnhancingNotification(false);
     }
-  }
+  };
 
   const handleEnhanceReply = async () => {
-    if (!replyMessage.trim()) return
-    
-    setEnhancingReply(true)
-    setReplyError('')
-    
-    try {
-      const response = await fetch('/api/enhance-text', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: replyMessage })
-      })
+    if (!replyMessage.trim()) return;
 
-      if (!response.ok) throw new Error('Failed to enhance')
-      
-      const data = await response.json()
+    setEnhancingReply(true);
+    setReplyError("");
+
+    try {
+      const response = await fetch("/api/enhance-text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: replyMessage }),
+      });
+
+      if (!response.ok) throw new Error("Failed to enhance");
+
+      const data = await response.json();
       if (data.enhanced) {
-        setReplyMessage(data.enhanced)
+        setReplyMessage(data.enhanced);
       } else {
-        throw new Error('No enhanced text received')
+        throw new Error("No enhanced text received");
       }
     } catch (err) {
-      setReplyError('Failed to enhance message. Please try again.')
-      setTimeout(() => setReplyError(''), 3000)
+      setReplyError("Failed to enhance message. Please try again.");
+      setTimeout(() => setReplyError(""), 3000);
     } finally {
-      setEnhancingReply(false)
+      setEnhancingReply(false);
     }
-  }
+  };
 
   const handleResolveTicket = async (ticketId, shouldResolve) => {
-    setResolvingTicket(true)
-    setReplyError('')
-    
-    try {
-      const response = await fetch('/api/admin/tickets/resolve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketId, resolved: shouldResolve })
-      })
+    setResolvingTicket(true);
+    setReplyError("");
 
-      if (!response.ok) throw new Error('Failed to resolve ticket')
-      
+    try {
+      const response = await fetch("/api/admin/tickets/resolve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketId, resolved: shouldResolve }),
+      });
+
+      if (!response.ok) throw new Error("Failed to resolve ticket");
+
       // Refresh tickets list
-      await fetchTickets()
-      
+      await fetchTickets();
+
       // Update selected ticket if it's the one being resolved
       if (selectedTicket?.id === ticketId) {
-        setSelectedTicket(prev => ({ ...prev, resolved: shouldResolve }))
+        setSelectedTicket((prev) => ({ ...prev, resolved: shouldResolve }));
       }
     } catch (err) {
-      setReplyError('Failed to update ticket status. Please try again.')
-      setTimeout(() => setReplyError(''), 3000)
+      setReplyError("Failed to update ticket status. Please try again.");
+      setTimeout(() => setReplyError(""), 3000);
     } finally {
-      setResolvingTicket(false)
+      setResolvingTicket(false);
     }
-  }
+  };
 
   // Filter tickets based on selected filter
-  const filteredTickets = tickets.filter(ticket => {
-    if (ticketFilter === 'open') return !ticket.resolved
-    if (ticketFilter === 'archived') return ticket.resolved
-    return true // 'all'
-  })
+  const filteredTickets = tickets.filter((ticket) => {
+    if (ticketFilter === "open") return !ticket.resolved;
+    if (ticketFilter === "archived") return ticket.resolved;
+    return true; // 'all'
+  });
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col overflow-x-hidden">
@@ -410,7 +483,10 @@ function AdminDashboard({ onLogout }) {
             <Lock className="w-5 h-5 text-red-400" />
             <h1 className="text-base sm:text-lg font-bold">Admin Dashboard</h1>
           </div>
-          <button onClick={onLogout} className="flex items-center gap-2 px-3 py-1.5 text-sm text-neutral-400 hover:text-red-400 transition-colors">
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-neutral-400 hover:text-red-400 transition-colors"
+          >
             <LogOut className="w-4 h-4" />
             <span className="hidden sm:inline">Logout</span>
           </button>
@@ -418,27 +494,27 @@ function AdminDashboard({ onLogout }) {
       </header>
 
       {/* Content */}
-      {activeTab === 'notifications' ? (
+      {activeTab === "notifications" ? (
         <div className="flex-1 overflow-auto px-4 py-4 min-h-0">
           <div className="flex flex-col lg:flex-row gap-4 max-w-7xl mx-auto w-full">
             {/* Sidebar */}
             <div className="w-full lg:w-56 shrink-0">
               <div className="bg-[#1a1a1b] border border-white/10 rounded-lg overflow-hidden">
                 {[
-                  { id: 'notifications', label: 'Notifications', icon: Bell },
-                  { id: 'tickets', label: 'Support Tickets', icon: Ticket }
+                  { id: "notifications", label: "Notifications", icon: Bell },
+                  { id: "tickets", label: "Support Tickets", icon: Ticket },
                 ].map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => {
-                      setActiveTab(tab.id)
-                      setShowTicketsList(true)
-                      setSelectedTicket(null)
+                      setActiveTab(tab.id);
+                      setShowTicketsList(true);
+                      setSelectedTicket(null);
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium border-b border-white/5 last:border-0 transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-blue-500/20 text-blue-300 border-l-2 border-l-blue-500'
-                        : 'text-neutral-400 hover:bg-white/5'
+                        ? "bg-blue-500/20 text-blue-300 border-l-2 border-l-blue-500"
+                        : "text-neutral-400 hover:bg-white/5"
                     }`}
                   >
                     <tab.icon className="w-4 h-4" />
@@ -455,7 +531,9 @@ function AdminDashboard({ onLogout }) {
                 animate={{ opacity: 1, x: 0 }}
                 className="bg-[#1a1a1b] border border-white/10 rounded-lg p-6"
               >
-                <h2 className="text-xl font-bold mb-6">Send Notification to All</h2>
+                <h2 className="text-xl font-bold mb-6">
+                  Send Notification to All
+                </h2>
                 <form onSubmit={handleSendNotification} className="space-y-5">
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">Title</Label>
@@ -475,11 +553,15 @@ function AdminDashboard({ onLogout }) {
                       <button
                         type="button"
                         onClick={handleEnhanceNotification}
-                        disabled={enhancingNotification || !notificationMessage.trim()}
+                        disabled={
+                          enhancingNotification || !notificationMessage.trim()
+                        }
                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-lg hover:bg-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                       >
                         <Sparkles className="w-3.5 h-3.5" />
-                        {enhancingNotification ? 'Enhancing...' : 'Enhance Message'}
+                        {enhancingNotification
+                          ? "Enhancing..."
+                          : "Enhance Message"}
                       </button>
                     </div>
                     <textarea
@@ -504,9 +586,13 @@ function AdminDashboard({ onLogout }) {
                     </div>
                   )}
 
-                  <Button type="submit" disabled={sendingNotification} className="w-full h-11 glass-button font-medium flex items-center justify-center gap-2">
+                  <Button
+                    type="submit"
+                    disabled={sendingNotification}
+                    className="w-full h-11 glass-button font-medium flex items-center justify-center gap-2"
+                  >
                     <Send className="w-4 h-4" />
-                    {sendingNotification ? 'Sending...' : 'Send Notification'}
+                    {sendingNotification ? "Sending..." : "Send Notification"}
                   </Button>
                 </form>
               </motion.div>
@@ -520,18 +606,20 @@ function AdminDashboard({ onLogout }) {
           <div className="lg:hidden px-4 py-3 flex-shrink-0">
             <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex overflow-hidden">
               {[
-                { id: 'notifications', label: 'Notifications', icon: Bell },
-                { id: 'tickets', label: 'Support Tickets', icon: Ticket }
+                { id: "notifications", label: "Notifications", icon: Bell },
+                { id: "tickets", label: "Support Tickets", icon: Ticket },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => {
-                    setActiveTab(tab.id)
-                    setShowTicketsList(true)
-                    setSelectedTicket(null)
+                    setActiveTab(tab.id);
+                    setShowTicketsList(true);
+                    setSelectedTicket(null);
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
-                    activeTab === tab.id ? 'bg-blue-500/20 text-blue-300' : 'text-neutral-400 hover:bg-white/5'
+                    activeTab === tab.id
+                      ? "bg-blue-500/20 text-blue-300"
+                      : "text-neutral-400 hover:bg-white/5"
                   }`}
                 >
                   <tab.icon className="w-4 h-4" />
@@ -542,17 +630,23 @@ function AdminDashboard({ onLogout }) {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 px-4 mb-3 flex-shrink-0">
+          <div className="grid grid-cols-3 gap-3 px-4 mb-3 shrink-0 mt-3">
             <div className="bg-[#1a1a1b] border border-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-blue-400">{tickets.length}</div>
+              <div className="text-2xl font-bold text-blue-400">
+                {tickets.length}
+              </div>
               <div className="text-xs text-neutral-500 mt-1">Total</div>
             </div>
             <div className="bg-[#1a1a1b] border border-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-yellow-400">{tickets.filter(t => !t.resolved).length}</div>
+              <div className="text-2xl font-bold text-yellow-400">
+                {tickets.filter((t) => !t.resolved).length}
+              </div>
               <div className="text-xs text-neutral-500 mt-1">Open</div>
             </div>
             <div className="bg-[#1a1a1b] border border-white/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-green-400">{tickets.filter(t => t.resolved).length}</div>
+              <div className="text-2xl font-bold text-green-400">
+                {tickets.filter((t) => t.resolved).length}
+              </div>
               <div className="text-xs text-neutral-500 mt-1">Archived</div>
             </div>
           </div>
@@ -561,17 +655,17 @@ function AdminDashboard({ onLogout }) {
           <div className="px-4 mb-3 flex-shrink-0">
             <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex overflow-hidden">
               {[
-                { id: 'open', label: 'Open', icon: Ticket },
-                { id: 'archived', label: 'Archived', icon: Archive },
-                { id: 'all', label: 'All', icon: null }
+                { id: "open", label: "Open", icon: Ticket },
+                { id: "archived", label: "Archived", icon: Archive },
+                { id: "all", label: "All", icon: null },
               ].map((filter) => (
                 <button
                   key={filter.id}
                   onClick={() => setTicketFilter(filter.id)}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
                     ticketFilter === filter.id
-                      ? 'bg-blue-500/20 text-blue-300'
-                      : 'text-neutral-400 hover:bg-white/5'
+                      ? "bg-blue-500/20 text-blue-300"
+                      : "text-neutral-400 hover:bg-white/5"
                   }`}
                 >
                   {filter.icon && <filter.icon className="w-4 h-4" />}
@@ -587,32 +681,54 @@ function AdminDashboard({ onLogout }) {
             <div className="lg:hidden h-full max-h-full">
               {showTicketsList ? (
                 <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full max-h-full">
-                  <h3 className="text-lg font-bold p-4 border-b border-white/10 flex-shrink-0">Tickets</h3>
+                  <h3 className="text-lg font-bold p-4 border-b border-white/10 flex-shrink-0">
+                    Tickets
+                  </h3>
                   <div className="flex-1 overflow-y-auto p-4 space-y-2">
                     {loadingTickets ? (
-                      <div className="text-center text-neutral-500 py-8">Loading...</div>
+                      <div className="text-center text-neutral-500 py-8">
+                        Loading...
+                      </div>
                     ) : filteredTickets.length === 0 ? (
-                      <div className="text-center text-neutral-500 py-8">No tickets</div>
+                      <div className="text-center text-neutral-500 py-8">
+                        No tickets
+                      </div>
                     ) : (
                       filteredTickets.map((ticket) => (
                         <button
                           key={ticket.id}
                           onClick={() => {
-                            setSelectedTicket(ticket)
-                            setShowTicketsList(false)
+                            setSelectedTicket(ticket);
+                            setShowTicketsList(false);
                           }}
                           className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
                         >
-                          <div className="font-medium text-sm truncate">{ticket.title}</div>
-                          <div className="text-xs text-neutral-400 mt-1">{ticket.type === 'team' ? ticket.team_name : ticket.participant_name}</div>
-                          <div className="flex items-center gap-2 mt-1">
-                            {ticket.resolved ? (
-                              <div className="text-xs text-green-400 flex items-center gap-1">
-                                <Archive className="w-3 h-3" />
-                                Archived
+                          <div className="font-medium text-sm truncate">
+                            {ticket.title}
+                          </div>
+                          <div className="text-xs text-neutral-400 mt-1">
+                            {ticket.type === "team"
+                              ? ticket.team_name
+                              : ticket.participant_name}
+                          </div>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center gap-2">
+                              {ticket.resolved ? (
+                                <div className="text-xs text-green-400 flex items-center gap-1">
+                                  <Archive className="w-3 h-3" />
+                                  Archived
+                                </div>
+                              ) : (
+                                <div className="text-xs text-yellow-400">
+                                  ● Open
+                                </div>
+                              )}
+                            </div>
+                            {getUnseenMessageCount(ticket.id) && (
+                              <div className="px-2 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-semibold border border-red-500/40 flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                                New
                               </div>
-                            ) : (
-                              <div className="text-xs text-yellow-400">● Open</div>
                             )}
                           </div>
                         </button>
@@ -625,22 +741,34 @@ function AdminDashboard({ onLogout }) {
                   <div className="bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full max-h-full">
                     {/* Header */}
                     <div className="p-3 border-b border-white/10 flex items-center gap-2 flex-shrink-0">
-                      <button onClick={() => setShowTicketsList(true)} className="text-neutral-400 hover:text-white transition-colors">
+                      <button
+                        onClick={() => setShowTicketsList(true)}
+                        className="text-neutral-400 hover:text-white transition-colors"
+                      >
                         <ArrowLeft className="w-5 h-5" />
                       </button>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-bold truncate">{selectedTicket.title}</h3>
+                        <h3 className="text-sm font-bold truncate">
+                          {selectedTicket.title}
+                        </h3>
                         <p className="text-xs text-neutral-500 truncate">
-                          {selectedTicket.type === 'team' ? selectedTicket.team_name : selectedTicket.participant_name}
+                          {selectedTicket.type === "team"
+                            ? selectedTicket.team_name
+                            : selectedTicket.participant_name}
                         </p>
                       </div>
                       <button
-                        onClick={() => handleResolveTicket(selectedTicket.id, !selectedTicket.resolved)}
+                        onClick={() =>
+                          handleResolveTicket(
+                            selectedTicket.id,
+                            !selectedTicket.resolved
+                          )
+                        }
                         disabled={resolvingTicket}
                         className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded transition-all ${
                           selectedTicket.resolved
-                            ? 'bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 hover:bg-yellow-500/20'
-                            : 'bg-green-500/10 text-green-300 border border-green-500/20 hover:bg-green-500/20'
+                            ? "bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 hover:bg-yellow-500/20"
+                            : "bg-green-500/10 text-green-300 border border-green-500/20 hover:bg-green-500/20"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                       >
                         {selectedTicket.resolved ? (
@@ -659,43 +787,75 @@ function AdminDashboard({ onLogout }) {
 
                     {/* Description */}
                     <div className="px-3 py-2 border-b border-white/10 shrink-0">
-                      <div className="text-xs text-neutral-500 mb-1 uppercase font-medium">Original Message</div>
-                      <div className="bg-white/5 p-2 rounded text-xs max-h-20 overflow-y-auto">{selectedTicket.description}</div>
+                      <div className="text-xs text-neutral-500 mb-1 uppercase font-medium">
+                        Original Message
+                      </div>
+                      <div className="bg-white/5 p-2 rounded text-xs max-h-20 overflow-y-auto">
+                        {selectedTicket.description}
+                      </div>
                     </div>
 
                     {/* Messages */}
                     <div className="flex-1 overflow-scroll bg-[#0f0f10] p-3 admin-messages-scroll min-h-0">
                       {ticketMessages.length === 0 ? (
-                        <div className="text-center text-neutral-500 text-xs py-8">No messages yet</div>
+                        <div className="text-center text-neutral-500 text-xs py-8">
+                          No messages yet
+                        </div>
                       ) : (
                         <div className="space-y-3">
                           {ticketMessages.map((msg, idx) => {
-                            const isAdmin = msg.sender_type === 'admin'
+                            const isAdmin = msg.sender_type === "admin";
                             return (
-                              <div key={`${msg.id}-${idx}`} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
+                              <div
+                                key={`${msg.id}-${idx}`}
+                                className={`flex ${
+                                  isAdmin ? "justify-start" : "justify-end"
+                                }`}
+                              >
                                 <div className={`max-w-[85%]`}>
-                                  <div className={`text-[10px] font-semibold px-1 mb-0.5 ${isAdmin ? 'text-blue-400' : 'text-gray-400 text-right'}`}>
-                                    {isAdmin ? 'Admin' : 'User'}
+                                  <div
+                                    className={`text-[10px] font-semibold px-1 mb-0.5 ${
+                                      isAdmin
+                                        ? "text-blue-400"
+                                        : "text-gray-400 text-right"
+                                    }`}
+                                  >
+                                    {isAdmin ? "Admin" : "User"}
                                   </div>
-                                  <div className={`px-3 py-2 rounded-2xl text-xs leading-relaxed ${
-                                    isAdmin ? 'bg-blue-500 text-white rounded-tl-none' : 'bg-green-500 text-white rounded-tr-none'
-                                  }`}>
+                                  <div
+                                    className={`px-3 py-2 rounded-2xl text-xs leading-relaxed ${
+                                      isAdmin
+                                        ? "bg-blue-500 text-white rounded-tl-none"
+                                        : "bg-green-500 text-white rounded-tr-none"
+                                    }`}
+                                  >
                                     {msg.message}
                                   </div>
-                                  <div className={`text-[9px] text-neutral-500 px-1 mt-0.5 ${isAdmin ? '' : 'text-right'}`}>
+                                  <div
+                                    className={`text-[9px] text-neutral-500 px-1 mt-0.5 ${
+                                      isAdmin ? "" : "text-right"
+                                    }`}
+                                  >
                                     {formatTime(msg.created_at)}
                                   </div>
                                 </div>
                               </div>
-                            )
+                            );
                           })}
                         </div>
                       )}
                     </div>
 
                     {/* Reply */}
-                    <form onSubmit={handleReplyToTicket} className="border-t border-white/10 p-3 flex-shrink-0">
-                      {replyError && <div className="text-red-300 text-xs bg-red-500/10 p-2 rounded mb-2 border border-red-500/20">{replyError}</div>}
+                    <form
+                      onSubmit={handleReplyToTicket}
+                      className="border-t border-white/10 p-3 flex-shrink-0"
+                    >
+                      {replyError && (
+                        <div className="text-red-300 text-xs bg-red-500/10 p-2 rounded mb-2 border border-red-500/20">
+                          {replyError}
+                        </div>
+                      )}
                       <textarea
                         placeholder="Type reply..."
                         value={replyMessage}
@@ -712,9 +872,12 @@ function AdminDashboard({ onLogout }) {
                           className="flex items-center justify-center gap-1 px-3 h-9 text-xs font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-lg hover:bg-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                           <Sparkles className="w-3 h-3" />
-                          {enhancingReply ? 'Enhancing...' : 'Enhance'}
+                          {enhancingReply ? "Enhancing..." : "Enhance"}
                         </button>
-                        <Button type="submit" className="flex-1 h-9 glass-button text-xs flex items-center justify-center gap-1.5">
+                        <Button
+                          type="submit"
+                          className="flex-1 h-9 glass-button text-xs flex items-center justify-center gap-1.5"
+                        >
                           <Send className="w-3.5 h-3.5" />
                           Send Reply
                         </Button>
@@ -726,26 +889,30 @@ function AdminDashboard({ onLogout }) {
             </div>
 
             {/* Desktop - Fixed Height Grid */}
-            <div className="hidden lg:flex gap-4 h-full max-h-full max-w-full overflow-x-hidden">
+            <div className="hidden lg:flex gap-4 h-[80vh]  max-w-full overflow-x-hidden">
               {/* Sidebar */}
               <div className="w-56 shrink-0 bg-[#1a1a1b] border border-white/10 rounded-lg overflow-hidden">
                 <div className="bg-[#1a1a1b] border-b border-white/10 p-4">
                   <div className="space-y-2">
                     {[
-                      { id: 'notifications', label: 'Notifications', icon: Bell },
-                      { id: 'tickets', label: 'Support Tickets', icon: Ticket }
+                      {
+                        id: "notifications",
+                        label: "Notifications",
+                        icon: Bell,
+                      },
+                      { id: "tickets", label: "Support Tickets", icon: Ticket },
                     ].map((tab) => (
                       <button
                         key={tab.id}
                         onClick={() => {
-                          setActiveTab(tab.id)
-                          setShowTicketsList(true)
-                          setSelectedTicket(null)
+                          setActiveTab(tab.id);
+                          setShowTicketsList(true);
+                          setSelectedTicket(null);
                         }}
                         className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                           activeTab === tab.id
-                            ? 'bg-blue-500/20 text-blue-300'
-                            : 'text-neutral-400 hover:bg-white/5'
+                            ? "bg-blue-500/20 text-blue-300"
+                            : "text-neutral-400 hover:bg-white/5"
                         }`}
                       >
                         <tab.icon className="w-4 h-4" />
@@ -758,12 +925,18 @@ function AdminDashboard({ onLogout }) {
 
               {/* Tickets List */}
               <div className="w-80 shrink-0 bg-[#1a1a1b] border border-white/10 rounded-lg flex flex-col h-full max-h-full">
-                <h3 className="text-lg font-bold p-4 border-b border-white/10 flex-shrink-0">Tickets</h3>
+                <h3 className="text-lg font-bold p-4 border-b border-white/10 flex-shrink-0">
+                  Tickets
+                </h3>
                 <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0">
                   {loadingTickets ? (
-                    <div className="text-center text-neutral-500 py-8">Loading...</div>
+                    <div className="text-center text-neutral-500 py-8">
+                      Loading...
+                    </div>
                   ) : filteredTickets.length === 0 ? (
-                    <div className="text-center text-neutral-500 py-8">No tickets</div>
+                    <div className="text-center text-neutral-500 py-8">
+                      No tickets
+                    </div>
                   ) : (
                     filteredTickets.map((ticket) => (
                       <button
@@ -771,20 +944,36 @@ function AdminDashboard({ onLogout }) {
                         onClick={() => setSelectedTicket(ticket)}
                         className={`w-full text-left p-3 rounded-lg text-sm transition-all ${
                           selectedTicket?.id === ticket.id
-                            ? 'bg-blue-500/20 border-2 border-blue-500/50'
-                            : 'bg-white/5 hover:bg-white/10 border border-white/10'
+                            ? "bg-blue-500/20 border-2 border-blue-500/50"
+                            : "bg-white/5 hover:bg-white/10 border border-white/10"
                         }`}
                       >
-                        <div className="font-medium truncate">{ticket.title}</div>
-                        <div className="text-xs text-neutral-400 mt-1 truncate">{ticket.type === 'team' ? ticket.team_name : ticket.participant_name}</div>
-                        <div className="flex items-center gap-2 mt-1">
-                          {ticket.resolved ? (
-                            <div className="text-xs text-green-400 flex items-center gap-1">
-                              <Archive className="w-3 h-3" />
-                              Archived
+                        <div className="font-medium truncate">
+                          {ticket.title}
+                        </div>
+                        <div className="text-xs text-neutral-400 mt-1 truncate">
+                          {ticket.type === "team"
+                            ? ticket.team_name
+                            : ticket.participant_name}
+                        </div>
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-center gap-2">
+                            {ticket.resolved ? (
+                              <div className="text-xs text-green-400 flex items-center gap-1">
+                                <Archive className="w-3 h-3" />
+                                Archived
+                              </div>
+                            ) : (
+                              <div className="text-xs text-yellow-400">
+                                ● Open
+                              </div>
+                            )}
+                          </div>
+                          {getUnseenMessageCount(ticket.id) && (
+                            <div className="px-2 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-semibold border border-red-500/40 flex items-center gap-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                              New
                             </div>
-                          ) : (
-                            <div className="text-xs text-yellow-400">● Open</div>
                           )}
                         </div>
                       </button>
@@ -800,16 +989,27 @@ function AdminDashboard({ onLogout }) {
                   <div className="p-4 border-b border-white/10 flex-shrink-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold truncate">{selectedTicket.title}</h3>
-                        <p className="text-sm text-neutral-400 truncate">{selectedTicket.type === 'team' ? selectedTicket.team_name : selectedTicket.participant_name}</p>
+                        <h3 className="text-lg font-bold truncate">
+                          {selectedTicket.title}
+                        </h3>
+                        <p className="text-sm text-neutral-400 truncate">
+                          {selectedTicket.type === "team"
+                            ? selectedTicket.team_name
+                            : selectedTicket.participant_name}
+                        </p>
                       </div>
                       <button
-                        onClick={() => handleResolveTicket(selectedTicket.id, !selectedTicket.resolved)}
+                        onClick={() =>
+                          handleResolveTicket(
+                            selectedTicket.id,
+                            !selectedTicket.resolved
+                          )
+                        }
                         disabled={resolvingTicket}
                         className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
                           selectedTicket.resolved
-                            ? 'bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 hover:bg-yellow-500/20'
-                            : 'bg-green-500/10 text-green-300 border border-green-500/20 hover:bg-green-500/20'
+                            ? "bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 hover:bg-yellow-500/20"
+                            : "bg-green-500/10 text-green-300 border border-green-500/20 hover:bg-green-500/20"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                       >
                         {selectedTicket.resolved ? (
@@ -829,65 +1029,101 @@ function AdminDashboard({ onLogout }) {
 
                   {/* Description */}
                   <div className="px-4 py-3 border-b border-white/10 flex-shrink-0">
-                    <div className="text-xs text-neutral-500 mb-2 uppercase font-medium">Original Message</div>
-                    <div className="bg-white/5 p-3 rounded-lg text-sm max-h-24 overflow-y-auto">{selectedTicket.description}</div>
+                    <div className="text-xs text-neutral-500 mb-2 uppercase font-medium">
+                      Original Message
+                    </div>
+                    <div className="bg-white/5 p-3 rounded-lg text-sm max-h-24 overflow-y-auto">
+                      {selectedTicket.description}
+                    </div>
                   </div>
 
                   {/* Messages - Takes remaining space */}
                   <div className="flex-1 overflow-y-auto bg-[#0f0f10] p-4 admin-messages-scroll min-h-0">
                     {ticketMessages.length === 0 ? (
-                      <div className="text-center text-neutral-500 py-12">No messages yet</div>
+                      <div className="text-center text-neutral-500 py-12">
+                        No messages yet
+                      </div>
                     ) : (
                       <div className="space-y-4">
                         {ticketMessages.map((msg, idx) => {
-                          const isAdmin = msg.sender_type === 'admin'
+                          const isAdmin = msg.sender_type === "admin";
                           return (
-                            <div key={`${msg.id}-${idx}`} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
+                            <div
+                              key={`${msg.id}-${idx}`}
+                              className={`flex ${
+                                isAdmin ? "justify-start" : "justify-end"
+                              }`}
+                            >
                               <div className="max-w-[70%]">
-                                <div className={`text-xs font-semibold px-1 mb-1 ${isAdmin ? 'text-blue-400' : 'text-gray-400 text-right'}`}>
-                                  {isAdmin ? 'Admin' : 'User'}
+                                <div
+                                  className={`text-xs font-semibold px-1 mb-1 ${
+                                    isAdmin
+                                      ? "text-blue-400"
+                                      : "text-gray-400 text-right"
+                                  }`}
+                                >
+                                  {isAdmin ? "Admin" : "User"}
                                 </div>
-                                <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                                  isAdmin ? 'bg-blue-500 text-white rounded-tl-none' : 'bg-green-500 text-white rounded-tr-none'
-                                }`}>
+                                <div
+                                  className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                                    isAdmin
+                                      ? "bg-blue-500 text-white rounded-tl-none"
+                                      : "bg-green-500 text-white rounded-tr-none"
+                                  }`}
+                                >
                                   {msg.message}
                                 </div>
-                                <div className={`text-xs text-neutral-500 px-1 mt-1 ${isAdmin ? '' : 'text-right'}`}>
+                                <div
+                                  className={`text-xs text-neutral-500 px-1 mt-1 ${
+                                    isAdmin ? "" : "text-right"
+                                  }`}
+                                >
                                   {formatTime(msg.created_at)}
                                 </div>
                               </div>
                             </div>
-                          )
+                          );
                         })}
                       </div>
                     )}
                   </div>
 
                   {/* Reply Form */}
-                  <form onSubmit={handleReplyToTicket} className="border-t border-white/10 p-4 flex-shrink-0">
-                    {replyError && <div className="text-red-300 text-xs bg-red-500/10 p-2 rounded mb-3 border border-red-500/20">{replyError}</div>}
-                    <Label className="text-xs font-medium uppercase mb-2 block text-neutral-400">Your Reply</Label>
-                    <textarea
-                      placeholder="Type your reply..."
-                      value={replyMessage}
-                      onChange={(e) => setReplyMessage(e.target.value)}
-                      required
-                      rows="3"
-                      className="glass-input p-3 text-sm w-full resize-none mb-3 rounded-lg"
-                    />
-                    <div className="flex gap-2">
+                  <form
+                    onSubmit={handleReplyToTicket}
+                    className="border-t border-white/10 p-4 flex-shrink-0"
+                  >
+                    {replyError && (
+                      <div className="text-red-300 text-xs bg-red-500/10 p-2 rounded mb-3 border border-red-500/20">
+                        {replyError}
+                      </div>
+                    )}
+                    
+                    <div className=" flex items-center justify-between">
+                      <textarea
+                        placeholder="Type your reply..."
+                        value={replyMessage}
+                        onChange={(e) => setReplyMessage(e.target.value)}
+                        required
+                        rows="3"
+                        className="glass-input p-3 text-sm w-3xl  resize-none  rounded-lg h-[6vh]"
+                      />
+
                       <button
                         type="button"
                         onClick={handleEnhanceReply}
                         disabled={enhancingReply || !replyMessage.trim()}
-                        className="flex items-center justify-center gap-1.5 px-4 h-10 text-sm font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-lg hover:bg-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="flex items-center justify-center gap-1.5 px-4 h-10 text-sm font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-lg hover:bg-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all ml-1 mr-1 w-[50px] "
                       >
                         <Sparkles className="w-4 h-4" />
-                        {enhancingReply ? 'Enhancing...' : 'Enhance'}
+                        {enhancingReply ? "🌟..." : "⭐"}
                       </button>
-                      <Button type="submit" className="flex-1 h-10 glass-button text-sm flex items-center justify-center gap-2">
+                      <Button
+                        type="submit"
+                        className="flex-1 h-10 glass-button text-sm flex items-center justify-center gap-2"
+                      >
                         <Send className="w-4 h-4" />
-                        Send Reply
+                        
                       </Button>
                     </div>
                   </form>
@@ -975,5 +1211,5 @@ function AdminDashboard({ onLogout }) {
         }
       `}</style>
     </div>
-  )
+  );
 }
