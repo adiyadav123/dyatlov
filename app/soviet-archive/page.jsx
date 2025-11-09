@@ -64,7 +64,12 @@ export default function SovietArchivePage() {
 
      
       const reports = [
-        { id: 1, title: 'Redacted Investigation Report', file: 'redacted_investigation_reports/1.pdf', category: 'reports', date: '1959-06-01', requiresAuth: true },
+        { id: 1, title: 'Redacted Investigation Report - Part I', file: 'redacted_investigation_reports/1.pdf', category: 'reports', date: '1959-03-15', requiresAuth: true },
+        { id: 2, title: 'Redacted Investigation Report - Part II', file: 'redacted_investigation_reports/2.pdf', category: 'reports', date: '1959-04-02', requiresAuth: true },
+        { id: 3, title: 'Redacted Investigation Report - Part III', file: 'redacted_investigation_reports/3.pdf', category: 'reports', date: '1959-04-18', requiresAuth: true },
+        { id: 4, title: 'Redacted Investigation Report - Part IV', file: 'redacted_investigation_reports/4.pdf', category: 'reports', date: '1959-05-05', requiresAuth: true },
+        { id: 5, title: 'Redacted Investigation Report - Part V', file: 'redacted_investigation_reports/5.pdf', category: 'reports', date: '1959-05-20', requiresAuth: true },
+        { id: 6, title: 'Redacted Investigation Report - Final Summary', file: 'redacted_investigation_reports/6.pdf', category: 'reports', date: '1959-06-01', requiresAuth: true },
       ]
 
       const transfers = [

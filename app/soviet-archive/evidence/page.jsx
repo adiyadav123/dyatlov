@@ -23,41 +23,9 @@ export default function EvidencePage() {
   const EVIDENCE_PASSWORD = 'sverdlovskoblastprosecutoroffice1959'
 
   useEffect(() => {
-    const checkAuthorization = async () => {
-      try {
-        const participantType = localStorage.getItem('participantType')
-        const participantId = localStorage.getItem('participantId')
-        const teamId = localStorage.getItem('teamId')
-        
-        if (!participantType || !participantId && !teamId) {
-          setIsAuthorized(false)
-          setLoading(false)
-          return
-        }
-
-        // Check if user has visited soviet-archive to unlock evidence
-        const id = participantType === 'team' ? teamId : participantId
-        const response = await fetch(
-          `/api/progress/fetch?participantId=${id}&participantType=${participantType}`
-        )
-        
-        if (response.ok) {
-          const data = await response.json()
-          // Evidence is accessible after visiting soviet-archive
-          const visitedSovietArchive = data.pages && data.pages.includes('soviet-archive')
-          setIsAuthorized(visitedSovietArchive)
-        } else {
-          setIsAuthorized(false)
-        }
-      } catch (err) {
-        console.error('Authorization check failed:', err)
-        setIsAuthorized(false)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    checkAuthorization()
+    // Evidence page is completely locked - always return false
+    setIsAuthorized(false)
+    setLoading(false)
   }, [])
 
   // Track page visit as a checkpoint
@@ -239,7 +207,7 @@ export default function EvidencePage() {
           
           <h1 className="text-3xl font-bold mb-3 font-cormorant-sc">EVIDENCE VAULT LOCKED</h1>
           <p className="text-[#2a1f0f]/70 mb-6 font-cormorant-garamond">
-            Access to classified evidence requires prior investigation of the Soviet Archive.
+            This section is currently under restricted access. Physical evidence archives are not available at this time.
           </p>
           
           <motion.div
@@ -249,7 +217,7 @@ export default function EvidencePage() {
             transition={{ delay: 0.3 }}
           >
             <p className="text-sm text-[#2a1f0f] font-cormorant-garamond">
-              📚 You must visit the <span className="font-semibold">Soviet Archive</span> section first to access the evidence vault.
+              � <span className="font-semibold">Access Denied</span> - The evidence vault remains classified. Continue your investigation through other available resources.
             </p>
           </motion.div>
           
