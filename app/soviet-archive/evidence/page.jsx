@@ -7,11 +7,58 @@ import { motion } from 'framer-motion'
 
 export default function EvidencePage() {
   const router = useRouter()
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [caseId, setCaseId] = useState('')
+  const [password, setPassword] = useState('')
+  const [authError, setAuthError] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedItem, setSelectedItem] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [audioPlaying, setAudioPlaying] = useState(null)
   const [audioProgress, setAudioProgress] = useState({})
+
+  const EVIDENCE_CASE_ID = '195902'
+  const EVIDENCE_PASSWORD = 'sverdlovskoblastprosecutoroffice1959'
+
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      try {
+        const participantType = localStorage.getItem('participantType')
+        const participantId = localStorage.getItem('participantId')
+        const teamId = localStorage.getItem('teamId')
+        
+        if (!participantType || !participantId && !teamId) {
+          setIsAuthorized(false)
+          setLoading(false)
+          return
+        }
+
+        // Check if user has visited soviet-archive to unlock evidence
+        const id = participantType === 'team' ? teamId : participantId
+        const response = await fetch(
+          `/api/progress/fetch?participantId=${id}&participantType=${participantType}`
+        )
+        
+        if (response.ok) {
+          const data = await response.json()
+          // Evidence is accessible after visiting soviet-archive
+          const visitedSovietArchive = data.pages && data.pages.includes('soviet-archive')
+          setIsAuthorized(visitedSovietArchive)
+        } else {
+          setIsAuthorized(false)
+        }
+      } catch (err) {
+        console.error('Authorization check failed:', err)
+        setIsAuthorized(false)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAuthorization()
+  }, [])
 
   // Track page visit as a checkpoint
   useEffect(() => {
@@ -50,8 +97,33 @@ export default function EvidencePage() {
       }
     }
 
-    trackEvidenceVisit()
-  }, [])
+    if (isAuthorized) {
+      trackEvidenceVisit()
+    }
+  }, [isAuthorized])
+
+  const handleEvidenceLogin = (e) => {
+    e.preventDefault()
+    setAuthError('')
+    
+    const normalizedCaseId = caseId.trim()
+    const normalizedPassword = password.trim()
+    
+    console.log('[Evidence Auth] Login attempt')
+    console.log('[Evidence Auth] Entered Case ID:', normalizedCaseId, 'Expected:', EVIDENCE_CASE_ID)
+    console.log('[Evidence Auth] Entered Password:', normalizedPassword, 'Expected:', EVIDENCE_PASSWORD)
+    
+    if (normalizedCaseId.toUpperCase() === EVIDENCE_CASE_ID.toUpperCase() && 
+        normalizedPassword.toLowerCase() === EVIDENCE_PASSWORD.toLowerCase()) {
+      console.log('[Evidence Auth] ✅ Authentication successful!')
+      setIsAuthenticated(true)
+      setCaseId('')
+      setPassword('')
+    } else {
+      console.log('[Evidence Auth] ❌ Authentication failed')
+      setAuthError('Invalid Case ID or Password. Please try again.')
+    }
+  }
 
   const diaries = [
     { id: 1, title: 'Yuri Doroshenko Diary Entry', date: '28.01.1959', category: 'diary', file: 'evidences/diaries/Yuri\'s Diary Entry.pdf', condition: 'Good', location: 'Found in tent' },
@@ -134,6 +206,143 @@ export default function EvidencePage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#d4c5a9] text-[#2a1f0f] flex items-center justify-center">
+        <div className="text-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-12 h-12 border-2 border-[#2a1f0f]/20 border-t-[#2a1f0f] rounded-full mx-auto mb-4"
+          />
+          <p>Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-[#d4c5a9] text-[#2a1f0f] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center max-w-md bg-[#f5e6d3] border-4 border-[#8b0000] p-6 rounded-lg"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="inline-block mb-6"
+          >
+            <Lock className="w-16 h-16 text-[#8b0000]" />
+          </motion.div>
+          
+          <h1 className="text-3xl font-bold mb-3 font-cormorant-sc">EVIDENCE VAULT LOCKED</h1>
+          <p className="text-[#2a1f0f]/70 mb-6 font-cormorant-garamond">
+            Access to classified evidence requires prior investigation of the Soviet Archive.
+          </p>
+          
+          <motion.div
+            className="bg-[#8b0000]/10 border-2 border-[#8b0000] rounded-lg p-4 mb-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <p className="text-sm text-[#2a1f0f] font-cormorant-garamond">
+              📚 You must visit the <span className="font-semibold">Soviet Archive</span> section first to access the evidence vault.
+            </p>
+          </motion.div>
+          
+          <button
+            onClick={() => router.push('/soviet-archive')}
+            className="px-6 py-2 bg-[#8b0000] hover:bg-[#8b0000]/90 text-[#d4c5a9] rounded-lg transition-colors font-semibold"
+          >
+            Visit Soviet Archive
+          </button>
+        </motion.div>
+      </div>
+    )
+  }
+
+  // Authentication required for evidence access
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#d4c5a9] text-[#2a1f0f] flex items-center justify-center p-4" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4b59a' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      }}>
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="w-full max-w-md bg-[#f5e6d3] border-4 border-[#8b0000] p-6 rounded-lg"
+        >
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#8b0000]">
+            <Lock className="w-8 h-8 text-[#8b0000]" />
+            <h1 className="text-2xl font-bold font-cormorant-sc">CASE FILE ACCESS</h1>
+          </div>
+
+          <form onSubmit={handleEvidenceLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-2 text-[#2a1f0f] font-cormorant-garamond">
+                Case ID
+              </label>
+              <input
+                type="text"
+                value={caseId}
+                onChange={(e) => setCaseId(e.target.value)}
+                placeholder="Enter case ID"
+                className="w-full px-4 py-2 border-2 border-[#2a1f0f] text-[#2a1f0f] placeholder-[#2a1f0f]/50 focus:outline-none focus:border-[#8b0000] font-cormorant-garamond"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold mb-2 text-[#2a1f0f] font-cormorant-garamond">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full px-4 py-2 border-2 border-[#2a1f0f] text-[#2a1f0f] placeholder-[#2a1f0f]/50 focus:outline-none focus:border-[#8b0000] font-cormorant-garamond"
+              />
+            </div>
+
+            {authError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 bg-red-100 border-2 border-red-300 text-red-800 text-sm rounded font-cormorant-garamond"
+              >
+                {authError}
+              </motion.div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-[#8b0000] hover:bg-[#8b0000]/90 text-[#d4c5a9] font-bold transition-colors font-cormorant-garamond tracking-wide"
+            >
+              Authenticate
+            </button>
+          </form>
+
+          <div className="mt-6 p-4 bg-[#8b0000]/10 border-2 border-[#8b0000] rounded-lg">
+            <p className="text-xs text-[#2a1f0f] mb-2 font-bold font-cormorant-sc">📋 HINT:</p>
+            <p className="text-xs text-[#2a1f0f]/70 font-cormorant-garamond">
+              Look for authentication credentials in the Soviet Archive. Case files use standardized Soviet administrative protocol credentials.
+            </p>
+          </div>
+
+          <button
+            onClick={() => router.push('/soviet-archive')}
+            className="w-full mt-4 px-4 py-2 border-2 border-[#2a1f0f] text-[#2a1f0f] hover:bg-[#2a1f0f]/10 font-semibold transition-colors font-cormorant-garamond"
+          >
+            Back
+          </button>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#d4c5a9] text-[#2a1f0f]" style={{
       backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4b59a' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
@@ -154,10 +363,10 @@ export default function EvidencePage() {
               <Lock className="w-5 h-5 sm:w-8 sm:h-8 text-[#d4c5a9]" />
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="text-sm sm:text-2xl lg:text-3xl font-bold tracking-wide truncate" style={{ fontFamily: 'Georgia, serif' }}>
+              <h1 className="text-sm sm:text-2xl lg:text-3xl font-bold tracking-wide truncate font-cormorant-sc">
                 PHYSICAL EVIDENCE ARCHIVE
               </h1>
-              <p className="text-[10px] sm:text-sm mt-0.5 sm:mt-1 opacity-80 truncate">Dyatlov Pass Incident • Case #195902-DPI</p>
+              <p className="text-[10px] sm:text-sm mt-0.5 sm:mt-1 opacity-80 truncate font-cormorant-garamond">Dyatlov Pass Incident • Case #195902-DPI</p>
             </div>
           </div>
           
@@ -184,10 +393,10 @@ export default function EvidencePage() {
           <div className="flex items-start gap-2 sm:gap-3">
             <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-[#8b0000] shrink-0 mt-0.5 sm:mt-1" />
             <div className="min-w-0 flex-1">
-              <h2 className="text-base sm:text-xl font-bold mb-1 sm:mb-2 break-words" style={{ fontFamily: 'Georgia, serif' }}>
+              <h2 className="text-base sm:text-xl font-bold mb-1 sm:mb-2 wrap-break-word font-cormorant-sc">
                 EVIDENCE HANDLING PROTOCOL
               </h2>
-              <p className="text-xs sm:text-sm leading-relaxed break-words">
+              <p className="text-xs sm:text-sm leading-relaxed wrap-break-word font-cormorant-garamond">
                 All items listed below were recovered from the incident site between February 26 and May 4, 1959. 
                 Physical evidence is stored in controlled environment. Access requires clearance authorization.
               </p>
@@ -199,7 +408,7 @@ export default function EvidencePage() {
           
           <div className="w-full lg:w-64 shrink-0">
             <div className="bg-[#f5e6d3] border-2 border-[#2a1f0f] p-3 sm:p-4 sticky top-4">
-              <h3 className="text-sm font-bold mb-3 sm:mb-4 pb-2 border-b-2 border-[#8b0000]" style={{ fontFamily: 'Georgia, serif' }}>
+              <h3 className="text-sm font-bold mb-3 sm:mb-4 pb-2 border-b-2 border-[#8b0000] font-cormorant-sc">
                 EVIDENCE TYPES
               </h3>
               
@@ -213,11 +422,11 @@ export default function EvidencePage() {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`w-full text-left px-3 py-2 text-xs sm:text-sm transition-colors ${
-                      selectedCategory === cat.id
-                        ? 'bg-[#8b0000] text-[#d4c5a9] font-bold'
-                        : 'hover:bg-[#2a1f0f]/10'
-                    }`}
+                      className={`w-full text-left px-3 py-2 text-xs sm:text-sm transition-colors font-cormorant-garamond ${
+                        selectedCategory === cat.id
+                          ? 'bg-[#8b0000] text-[#d4c5a9] font-bold'
+                          : 'hover:bg-[#2a1f0f]/10'
+                      }`}
                   >
                     <div className="flex justify-between items-center">
                       <span className="truncate">{cat.label}</span>
@@ -228,8 +437,8 @@ export default function EvidencePage() {
               </nav>
 
               <div className="mt-4 sm:mt-6 p-3 bg-[#8b0000]/10 border border-[#8b0000]/30 text-xs">
-                <p className="font-bold mb-1">⚠️ NOTICE</p>
-                <p className="opacity-80 leading-relaxed">
+                <p className="font-bold mb-1 font-cormorant-sc">⚠️ NOTICE</p>
+                <p className="opacity-80 leading-relaxed font-cormorant-garamond">
                   Original documents are fragile. Digital copies provided for research purposes only.
                 </p>
               </div>
@@ -239,10 +448,10 @@ export default function EvidencePage() {
           <div className="flex-1 min-w-0">
             <div className="bg-[#f5e6d3] border-2 border-[#2a1f0f] p-3 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b-2 border-[#8b0000] gap-2">
-                <h2 className="text-base sm:text-xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>
+                <h2 className="text-base sm:text-xl font-bold font-cormorant-sc">
                   EVIDENCE CATALOG
                 </h2>
-                <div className="text-xs sm:text-sm opacity-70">
+                <div className="text-xs sm:text-sm opacity-70 font-cormorant-garamond">
                   {filteredItems.length} items
                 </div>
               </div>
@@ -377,9 +586,9 @@ export default function EvidencePage() {
             <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-[#2a1f0f] text-[#d4c5a9] text-[10px] sm:text-xs border-2 border-[#8b0000]">
               <div className="flex items-center gap-2 mb-2">
                 <Lock className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="font-bold">Evidence Chain of Custody</span>
+                <span className="font-bold font-cormorant-sc">Evidence Chain of Custody</span>
               </div>
-              <p className="opacity-80 leading-relaxed break-words">
+              <p className="opacity-80 leading-relaxed wrap-break-word font-cormorant-garamond">
                 All evidence documented and preserved according to Soviet Criminal Code Article 182. 
                 Original items stored at Regional Forensic Laboratory, Sverdlovsk. Access restricted to authorized personnel.
               </p>
@@ -397,7 +606,7 @@ export default function EvidencePage() {
             className="bg-[#f5e6d3] border-4 border-[#8b0000] p-4 sm:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-start justify-between mb-4">
-              <h3 className="text-base sm:text-xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>
+              <h3 className="text-base sm:text-xl font-bold font-cormorant-sc">
                 {selectedItem.title}
               </h3>
               <button
@@ -427,7 +636,7 @@ export default function EvidencePage() {
               )}
             </div>
 
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-sm font-cormorant-garamond">
               <div className="flex justify-between py-2 border-b border-[#2a1f0f]/20">
                 <span className="font-bold">Date:</span>
                 <span>{selectedItem.date}</span>
@@ -454,7 +663,7 @@ export default function EvidencePage() {
 
             <button
               onClick={() => setShowModal(false)}
-              className="w-full mt-4 px-4 py-2 bg-[#2a1f0f] text-[#d4c5a9] font-bold hover:bg-[#8b0000] transition-colors"
+              className="w-full mt-4 px-4 py-2 bg-[#2a1f0f] text-[#d4c5a9] font-bold hover:bg-[#8b0000] transition-colors font-cormorant-garamond"
             >
               Close
             </button>
@@ -464,7 +673,7 @@ export default function EvidencePage() {
 
       <footer className="bg-[#2a1f0f] text-[#d4c5a9] border-t-2 sm:border-t-4 border-[#8b0000] mt-6 sm:mt-12">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-[10px] sm:text-xs gap-3 sm:gap-0">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-[10px] sm:text-xs gap-3 sm:gap-0 font-cormorant-garamond">
             <div>
               <p>© 1959-2025 State Archive • Evidence Division</p>
               <p className="opacity-60 mt-1">Ministry of Internal Affairs</p>
@@ -476,14 +685,6 @@ export default function EvidencePage() {
           </div>
         </div>
       </footer>
-
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&display=swap');
-        
-        body {
-          font-family: 'PT Serif', Georgia, serif;
-        }
-      `}</style>
     </div>
   )
 }

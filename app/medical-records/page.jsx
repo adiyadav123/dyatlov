@@ -1,11 +1,51 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileText, Skull, Activity, MapPin, Calendar, ArrowLeft } from 'lucide-react'
+import { FileText, Skull, Activity, MapPin, Calendar, ArrowLeft, Lock } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function MedicalRecordsPage() {
   const router = useRouter()
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      try {
+        const participantType = localStorage.getItem('participantType')
+        const participantId = localStorage.getItem('participantId')
+        const teamId = localStorage.getItem('teamId')
+        
+        if (!participantType || !participantId && !teamId) {
+          setIsAuthorized(false)
+          setLoading(false)
+          return
+        }
+
+        // Check if user has accessed the checkpoint to unlock this page
+        const id = participantType === 'team' ? teamId : participantId
+        const response = await fetch(
+          `/api/progress/fetch?participantId=${id}&participantType=${participantType}`
+        )
+        
+        if (response.ok) {
+          const data = await response.json()
+          // Medical records are accessible after visiting soviet-archive (checkpoint)
+          setIsAuthorized(data.pagesCompleted > 0)
+        } else {
+          setIsAuthorized(false)
+        }
+      } catch (err) {
+        console.error('Authorization check failed:', err)
+        setIsAuthorized(false)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAuthorization()
+  }, [])
 
   const autopsyReports = [
     {
@@ -135,6 +175,64 @@ export default function MedicalRecordsPage() {
       location: 'Ravine, near Dubinina group'
     }
   ]
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
+        <div className="text-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-12 h-12 border-2 border-white/20 border-t-white rounded-full mx-auto mb-4"
+          />
+          <p>Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center max-w-md"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="inline-block mb-6"
+          >
+            <Lock className="w-16 h-16 text-red-500" />
+          </motion.div>
+          
+          <h1 className="text-3xl font-bold mb-3">ASSET LOCKED</h1>
+          <p className="text-neutral-400 mb-6">
+            You don't have access to this resource right now. Complete the investigation checkpoints to unlock restricted assets.
+          </p>
+          
+          <motion.div
+            className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 mb-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <p className="text-sm text-neutral-300">
+              📋 Complete the <span className="text-blue-400 font-semibold">Soviet Archive</span> checkpoint to unlock medical records.
+            </p>
+          </motion.div>
+          
+          <button
+            onClick={() => router.push('/soviet-archive')}
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors font-semibold"
+          >
+            Back to Investigation
+          </button>
+        </motion.div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
