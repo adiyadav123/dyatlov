@@ -24,8 +24,8 @@ const cormorantGaramond = Cormorant_Garamond({
 })
 
 export const metadata = {
-  title: "The Dyatlov Chronicles - Coming Soon",
-  description: "An interactive treasure hunt experience. Coming November 7, 2025.",
+  title: "The Dyatlov Chronicles",
+  description: "An interactive treasure hunt experience. Ending November 14, 2025.",
   keywords: ["coming soon", "interactive", "treasure hunt", "experience"],
   authors: [{ name: "The Jaipuria Computer Club & Team" }],
   viewport: {
