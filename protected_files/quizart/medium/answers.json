@@ -1,0 +1,17 @@
+{
+    "first":{
+        "answer": "One Piece"
+    }, 
+    "second":{
+        "answer": "APJ Abdul Kalam"
+    },
+    "third":{
+        "answer": "Chatbot (Any valid synonym accepted)"
+    },
+    "fourth":{
+        "answer": "Encryption (Any valid synonym accepted)"
+    },
+    "fifth":{
+        "answer": "Lata Mangeshkar "
+    }
+}

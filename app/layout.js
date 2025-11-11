@@ -28,6 +28,12 @@ export const metadata = {
   description: "An interactive treasure hunt experience. Coming November 7, 2025.",
   keywords: ["coming soon", "interactive", "treasure hunt", "experience"],
   authors: [{ name: "The Jaipuria Computer Club & Team" }],
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
   creator: "The Jaipuria Computer Club",
 }
 

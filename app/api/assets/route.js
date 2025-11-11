@@ -13,7 +13,65 @@ import path from 'path'
 
 export async function GET(request) {
   try {
-    // Get auth token from request
+    // Get query parameters
+    const { searchParams } = new URL(request.url)
+    const fileParam = searchParams.get('file') // For QuizArt
+    const assetType = searchParams.get('type')
+    const assetPath = searchParams.get('asset')
+
+    // Handle QuizArt files (no auth required)
+    if (fileParam) {
+      // Prevent directory traversal attacks
+      if (fileParam.includes('..') || fileParam.startsWith('/')) {
+        return NextResponse.json(
+          { error: 'Invalid file path' },
+          { status: 403 }
+        )
+      }
+
+      // Only allow quizart files
+      if (!fileParam.startsWith('quizart/')) {
+        return NextResponse.json(
+          { error: 'Invalid file path' },
+          { status: 403 }
+        )
+      }
+
+      // Build full file path
+      const fullPath = path.join(
+        process.cwd(),
+        'protected_files',
+        fileParam
+      )
+
+      // Verify file exists
+      try {
+        const fileBuffer = await fs.readFile(fullPath)
+        
+        // Determine content type
+        let contentType = 'application/octet-stream'
+        if (fullPath.endsWith('.png')) contentType = 'image/png'
+        else if (fullPath.endsWith('.jpg') || fullPath.endsWith('.jpeg')) contentType = 'image/jpeg'
+        else if (fullPath.endsWith('.gif')) contentType = 'image/gif'
+        else if (fullPath.endsWith('.webp')) contentType = 'image/webp'
+        else if (fullPath.endsWith('.json')) contentType = 'application/json'
+
+        return new NextResponse(fileBuffer, {
+          status: 200,
+          headers: {
+            'Content-Type': contentType,
+            'Cache-Control': 'public, max-age=3600',
+          },
+        })
+      } catch (err) {
+        return NextResponse.json(
+          { error: 'File not found' },
+          { status: 404 }
+        )
+      }
+    }
+
+    // Get auth token from request (for protected assets)
     const authToken = request.cookies.get('auth_token')?.value
     const userEmail = request.cookies.get('user_email')?.value
 
@@ -24,11 +82,6 @@ export async function GET(request) {
         { status: 401 }
       )
     }
-
-    // Get query parameters
-    const { searchParams } = new URL(request.url)
-    const assetType = searchParams.get('type')
-    const assetPath = searchParams.get('asset')
 
     if (!assetType || !assetPath) {
       return NextResponse.json(
