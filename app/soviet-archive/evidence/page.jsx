@@ -50,7 +50,47 @@ export default function EvidencePage() {
         console.error('Failed to load connections:', e)
       }
     }
+
+    // Track page visit to database
+    trackPageVisit()
   }, [])
+
+  const trackPageVisit = async () => {
+    try {
+      const participantId = localStorage.getItem('participantId')
+      const teamId = localStorage.getItem('teamId')
+      const participantType = localStorage.getItem('participantType')
+      
+      // Use teamId if participant is a team, otherwise use participantId
+      const id = participantType === 'team' ? teamId : participantId
+      
+      if (!id) {
+        console.log('No participant ID found, skipping progress tracking')
+        return
+      }
+
+      console.log('Tracking evidence page visit - ID:', id, 'Type:', participantType)
+
+      const response = await fetch('/api/progress/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          participantId: id,
+          participantType: participantType,
+          pageVisited: 'evidence'
+        })
+      })
+
+      if (!response.ok) {
+        console.error('Progress tracking failed:', response.status, response.statusText)
+      } else {
+        const result = await response.json()
+        console.log('Evidence page visit tracked successfully:', result)
+      }
+    } catch (error) {
+      console.error('Failed to track page visit:', error)
+    }
+  }
 
   // Save progress whenever unlockedItems changes
   useEffect(() => {
