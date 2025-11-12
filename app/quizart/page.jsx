@@ -146,6 +146,7 @@ export default function QuizArtHome() {
                   <SelectItem value="C" className="text-white">Section C</SelectItem>
                   <SelectItem value="D" className="text-white">Section D</SelectItem>
                   <SelectItem value="E" className="text-white">Section E</SelectItem>
+                  <SelectItem value="E" className="text-white">Section F</SelectItem>
                 </SelectContent>
               </Select>
             </div>
