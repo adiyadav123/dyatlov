@@ -30,7 +30,7 @@ export async function POST(request) {
         htmlContent: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1b 100%); padding: 40px; text-align: center; color: white;">
-              <h1 style="margin: 0; font-size: 28px; letter-spacing: 2px;">THE LAST ECHO</h1>
+              <h1 style="margin: 0; font-size: 28px; letter-spacing: 2px;">THE DYATLOV CHRONICLES</h1>
               <p style="margin: 10px 0 0 0; font-size: 12px; color: #999; letter-spacing: 1px;">PASSWORD RESET REQUEST</p>
             </div>
             
