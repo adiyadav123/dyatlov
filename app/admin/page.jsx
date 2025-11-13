@@ -253,21 +253,25 @@ function AdminDashboard({ onLogout }) {
       const messages = Array.isArray(data) ? data : [];
       setTicketMessages(sortMessagesByTime(messages));
       
-      // Check if there are any NEW user messages (not from admin) after the last seen timestamp
-      const lastSeen = lastSeenTimestamp[ticketId];
-      const userMessages = messages.filter((msg) => msg.sender_type !== "admin");
-      
-      if (userMessages.length > 0) {
-        const latestUserMessage = userMessages[userMessages.length - 1];
-        let messageTime = new Date(latestUserMessage.created_at).getTime();
+      // Only check for unseen messages if this ticket is NOT currently selected
+      // (to avoid race condition with markMessagesAsSeen)
+      if (selectedTicket?.id !== ticketId) {
+        // Check if there are any NEW user messages (not from admin) after the last seen timestamp
+        const lastSeen = lastSeenTimestamp[ticketId];
+        const userMessages = messages.filter((msg) => msg.sender_type !== "admin");
         
-        // If this is the first time viewing, or if there's a newer message than last seen
-        if (!lastSeen || messageTime > lastSeen) {
-          // Mark as unseen - there are new user messages
-          setSeenMessages((prev) => ({
-            ...prev,
-            [ticketId]: false,
-          }));
+        if (userMessages.length > 0) {
+          const latestUserMessage = userMessages[userMessages.length - 1];
+          let messageTime = new Date(latestUserMessage.created_at).getTime();
+          
+          // If this is the first time viewing, or if there's a newer message than last seen
+          if (!lastSeen || messageTime > lastSeen) {
+            // Mark as unseen - there are new user messages
+            setSeenMessages((prev) => ({
+              ...prev,
+              [ticketId]: false,
+            }));
+          }
         }
       }
     } catch (err) {
@@ -739,12 +743,6 @@ function AdminDashboard({ onLogout }) {
                                 </div>
                               )}
                             </div>
-                            {getUnseenMessageCount(ticket.id) && (
-                              <div className="px-2 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-semibold border border-red-500/40 flex items-center gap-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                                New
-                              </div>
-                            )}
                           </div>
                         </button>
                       ))
@@ -984,12 +982,6 @@ function AdminDashboard({ onLogout }) {
                               </div>
                             )}
                           </div>
-                          {getUnseenMessageCount(ticket.id) && (
-                            <div className="px-2 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-semibold border border-red-500/40 flex items-center gap-1">
-                              <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                              New
-                            </div>
-                          )}
                         </div>
                       </button>
                     ))

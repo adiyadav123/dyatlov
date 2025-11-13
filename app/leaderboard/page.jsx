@@ -13,7 +13,7 @@ export default function LeaderboardPage() {
   const [countdown, setCountdown] = useState('')
   const [currentUser, setCurrentUser] = useState(null)
 
-  const eventEndDate = new Date('2025-11-14T23:59:59')
+  const eventEndDate = new Date('2025-11-30T23:59:59')
 
   // Function to fetch leaderboard data
   const fetchLeaderboard = async () => {
@@ -481,7 +481,7 @@ export default function LeaderboardPage() {
               <div>
                 <div className="text-sm text-neutral-400">Investigation Deadline</div>
                 <div className="text-2xl font-bold font-mono text-white">{countdown}</div>
-                <div className="text-xs text-neutral-500">Until November 14, 2025</div>
+                <div className="text-xs text-neutral-500">Until November 30, 2025</div>
               </div>
             </div>
             <div className="text-right">

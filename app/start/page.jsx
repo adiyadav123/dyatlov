@@ -302,17 +302,17 @@ export default function StartPage() {
         setUnreadCount(unreadNotifications.length);
 
         // Show browser notification for new notifications
-        // Get previously seen notification IDs from sessionStorage to avoid duplicates
+        // Get previously seen notification IDs from localStorage to avoid duplicates
         const previousIds = JSON.parse(
-          sessionStorage.getItem("seenNotifications") || "[]"
+          localStorage.getItem("seenBrowserNotifications") || "[]"
         );
         const newNotifications = notificationsData.filter(
           (notif) => !previousIds.includes(notif.id)
         );
 
-        // Save all current notification IDs to sessionStorage
+        // Save all current notification IDs to localStorage (not sessionStorage)
         const allIds = notificationsData.map((n) => n.id);
-        sessionStorage.setItem("seenNotifications", JSON.stringify(allIds));
+        localStorage.setItem("seenBrowserNotifications", JSON.stringify(allIds));
 
         // Show browser notifications for new ones
         newNotifications.forEach((notif) => {
