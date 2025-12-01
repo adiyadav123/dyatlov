@@ -799,13 +799,13 @@ export default function EvidencePage() {
             </filter>
           </defs>
           {connections.map((conn, idx) => {
-            // Calculate center positions of evidence items
+            
             const fromItem = evidenceItems.find(item => item.id === conn.from)
             const toItem = evidenceItems.find(item => item.id === conn.to)
             
             if (!fromItem || !toItem) return null
             
-            // Convert percentage to pixels (approximate based on container)
+           
             const containerWidth = typeof window !== 'undefined' ? window.innerWidth * 0.875 : 1200
             const containerHeight = typeof window !== 'undefined' ? window.innerHeight * 0.85 : 800
             
