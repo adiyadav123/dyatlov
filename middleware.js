@@ -20,14 +20,6 @@ export function middleware(request) {
   const { pathname } = request.nextUrl
 
   // Lock the site: allow only API/static and the `/event-ended` page
-  if (
-    !pathname.startsWith('/api/') &&
-    !pathname.startsWith('/_next') &&
-    !PUBLIC_ROUTES.some(route => pathname === route || pathname.startsWith(route + '/'))
-  ) {
-    const url = new URL('/event-ended', request.url)
-    return NextResponse.redirect(url)
-  }
 
   // Allow public routes
   if (PUBLIC_ROUTES.some(route => pathname === route || pathname.startsWith(route + '/'))) {
